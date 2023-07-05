@@ -1,8 +1,12 @@
 {
-  "name": "steak",
-  "version": "1.0.0",
+  "name": "steacc",
+  "version": "0.1.0",
   "description": "",
-  "main": "main.js",
+  "main": "index.js",
+  "bin": {
+    "steacc": "./index.js",
+    "st": "./index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
