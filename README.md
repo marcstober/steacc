@@ -2,7 +2,7 @@
 Sci-Tech Electronic Assistant for Coding Campers
 
 ## Installation
-`npm i -g steacc`
+`npm i -g @marcstober/steacc`
 
 ## Usage
 

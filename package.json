@@ -1,5 +1,5 @@
 {
-  "name": "steacc",
+  "name": "@marcstober/steacc",
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
@@ -12,5 +12,8 @@
   },
   "keywords": [],
   "author": "",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "public"
+  }
 }
