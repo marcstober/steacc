@@ -5,11 +5,21 @@ Sci-Tech Electronic Assistant for Coding Campers
 `npm i -g @marcstober/steacc`
 
 ## Usage
+`st`
+Prompt for coder name and switch to project folder.
+
+`st update`
+Update S.T.E.A.C.C.
+
+`st hello`
+????
 
 ## TODO
 * Onboarding Experience
-   * prompt for "coder name"
-   * project selection (includes new project option by default)
+   * ASCII art
+   * Rules, etc.
+* project selection (includes new project option by default)
+* Install package.json in a new project
 * Install p5.vscode (or, a replacement/update for it)
    * 4 spaces
    * no semicolons
