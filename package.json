@@ -1,6 +1,6 @@
 {
   "name": "@marcstober/steacc",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
   "type": "module",
   "main": "index.js",
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "echo \"Erroror\" && powershell.exe ./install.ps1"
+    "install": "powershell.exe ./install.ps1"
   },
   "keywords": [],
   "author": "",
