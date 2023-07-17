@@ -73,7 +73,7 @@ switch (process.argv[2]) {
 
 
 function update() {
-    child_process.exec('npm update steacc', (err, stdout, stderr) => {
+    child_process.exec('npm update -g @marcstober/steacc', (err, stdout, stderr) => {
         if (err) {
             console.error(err);
             return;
