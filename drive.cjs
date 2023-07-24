@@ -1,8 +1,15 @@
 const fs = require('fs').promises;
 const path = require('path');
 const process = require('process');
-const { authenticate } = require('@google-cloud/local-auth');
+// const { authenticate } = require('@google-cloud/local-auth');
+const { OAuth2Client } = require('google-auth-library');
 const { google } = require('googleapis');
+const http = require('http');
+const url = require('url');
+// const open = require('open'); // see below
+
+const destroyer = require('server-destroy'); // TODO: What does this do???
+const { Console } = require('console');
 
 // If modifying these scopes, delete token.json.
 const SCOPES = [
@@ -12,8 +19,110 @@ const SCOPES = [
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
 // time.
-const TOKEN_PATH = path.join(process.cwd(), 'token.json');
-const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
+// const TOKEN_PATH = path.join(process.cwd(), 'token.json');
+// const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
+
+// Download your OAuth2 configuration from the Google
+// const keys = require('./oauth2.keys.json')
+// "iOS"
+// const clientId = "937882195989-lhqgu9b7nto8qoi6bsbslnuu6qdrfhn8.apps.googleusercontent.com"
+// Desktop
+// const clientId = "937882195989-l56qvq9fisaug5d55c36k75bftfpaj6o.apps.googleusercontent.com"
+// Web app
+const clientId = "937882195989-e22mtha70bbiar37dhduuuenue1obta4.apps.googleusercontent.com"
+
+/**
+* Create a new OAuth2Client, and go through the OAuth2 content
+* workflow.  Return the full client to the callback.
+*/
+function getAuthenticatedClient() {
+    return new Promise((resolve, reject) => {
+        // create an oAuth client to authorize the API call.  Secrets are kept in a `keys.json` file,
+        // which should be downloaded from the Google Developers Console.
+        const oAuth2Client = new OAuth2Client({
+            clientId: clientId,
+            redirectUri: "http://localhost:3000/oauth2callback",
+            responseType: "token",
+        });
+        // // keys.web.client_secret,
+        // keys.web.redirect_uris[0]
+        // );
+
+        // Generate the url that will be used for the consent dialog.
+        // const authorizeUrl = oAuth2Client.generateAuthUrl({
+        //     access_type: 'offline',
+        //     scope: 'https://www.googleapis.com/auth/userinfo.profile',
+        // });
+        const authorizeUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
+            "client_id=" + clientId +
+            "&scope=" + SCOPES[0] + // TODO: Other scopes. URLEncode?
+            "&redirect_uri=http://localhost:3000/oauth2callback" + // TODO: URLEncode?
+            "&response_type=token"; // important!?
+
+        // Open an http server to accept the oauth callback. In this simple example, the
+        // only request to our webserver is to /oauth2callback?code=<code>
+        const server = http
+            .createServer(async (req, res) => {
+                try {
+                    console.log("req.url is:")
+                    console.log(req.originalUrl)
+                    if (req.url.indexOf('/oauth2callback') > -1) {
+                        // acquire the code from the querystring, and close the web server.
+                        const qs = new url.URL(req.url, 'http://localhost:3000').searchParams;
+                        const code = qs.get('access_token');
+                        console.log(`access_token is ${code}`); // can't get access_token in hash server side!
+                        const fileData = await fs.readFile('oauth2callback.html', 'utf8')
+                        res.writeHead(200, { 'Content-Type': 'text/html' })
+                        // res.write(fileData)
+                        res.end(fileData)
+                        // res.end('Authentication successful! Please return to the console.');
+                        // TODO: redirect to get the token server-side
+                    } else if (req.url.indexOf('/step2') > -1) {
+                        const qs = new url.URL(req.url, 'http://localhost:3000').searchParams;
+                        const code = qs.get('access_token');
+                        console.log(`access_token is ${code}`);
+                        res.end('Authentication successful! Please return to the console.');
+                        // TODO: redirect to google drive
+                        server.destroy();
+
+                        // Now that we have the code, use that to acquire tokens.
+                        // const r = await oAuth2Client.getToken(code);
+                        // Make sure to set the credentials on the OAuth2 client.
+                        // oAuth2Client.setCredentials(r.tokens);
+                        oAuth2Client.setCredentials({ access_token: code })
+                        console.info('Tokens acquired.');
+                        resolve(oAuth2Client);
+                    }
+                } catch (e) {
+                    reject(e);
+                }
+            })
+            .listen(3000, () => {
+                // open the browser to the authorize url to start the workflow
+                console.log('Authorize this app by visiting this url:', authorizeUrl);
+                open(authorizeUrl, { wait: false }).then(cp => cp.unref());
+            });
+        destroyer(server);
+    });
+}
+
+function getAccessToken(x, client_id, client_secret, redirect_uri) {
+    var postDataUrl = 'https://www.googleapis.com/oauth2/v4/token?' +
+        'code=' + x +  //auth code received from the previous call
+        '&client_id=' + client_id +
+        '&client_secret=' + client_secret +
+        '&redirect_uri=' + redirect_uri +
+        '&grant_type=' + "authorization_code"
+
+    var options = {
+        uri: postDataUrl,
+        method: 'POST'
+    };
+
+    request(options, function (err, res, body) {
+        return body; //returns an object with an access token!!!
+    });
+}
 
 /**
  * Reads previously authorized credentials from the save file.
@@ -115,5 +224,11 @@ async function uploadBasic(authClient) {
     }
 }
 
-// authorize().then(listFiles).catch(console.error);
-authorize().then(uploadBasic).catch(console.error)
+
+let open
+import("open").then(obj => {
+    open = obj.default
+    console.log(open)
+    // authorize().then(listFiles).catch(console.error);
+    getAuthenticatedClient().then(uploadBasic).catch(console.error)
+})

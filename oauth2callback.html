@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+
+<body>
+    <h1>oAuth2Callback</h1>
+    <a href="step2?" id="click-me">Click me</a>
+    <script type="text/javascript">
+        document.getElementById('click-me').href += document.location.hash.substring(1)
+        // alert(document.location.hash.substring(1))
+    </script>
+</body>
+
+</html>
