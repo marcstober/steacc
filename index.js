@@ -1,8 +1,14 @@
 #!/usr/bin/env node
 
 import child_process from 'child_process'
-import { askQuestion } from './input.js'
+import { askQuestion } from './question-asker.js'
 import * as fs from 'fs'
+
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // function log(msg) {
 //     console.log(`STEACC>> ${msg}`)
@@ -58,7 +64,13 @@ switch (process.argv[2]) {
                 console.log("Creating project...")
                 console.log(`mkdir C:\\${name}\\${projectName}\\`)
                 fs.mkdirSync(`C:\\${name}\\${projectName}\\`)
-                // TODO: create package.json, etc.
+                // TODO: create a more complete package.json?
+                fs.writeFileSync(`C:\\${name}\\${projectName}\\package.json`, JSON.stringify({
+                    "type": "module"
+                }))
+                fs.copyFileSync(__dirname + '\\question-asker.js',
+                    `C:\\${name}\\${projectName}\\question-asker.js`)
+
             }
         }
 

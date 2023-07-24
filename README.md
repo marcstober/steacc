@@ -25,7 +25,6 @@ st hello
    * ASCII art
    * Rules, etc.
 * project selection as a menu (includes new project option by default)
-* Install package.json in a new project
 * Install p5.vscode (or, a replacement/update for it)
    * 4 spaces
    * no semicolons
