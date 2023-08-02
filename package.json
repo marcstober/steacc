@@ -1,7 +1,11 @@
 {
   "name": "@marcstober/steacc",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marcstober/steacc"
+  },
   "type": "module",
   "main": "index.js",
   "bin": {
