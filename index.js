@@ -7,7 +7,11 @@ import * as fs from 'fs'
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __filename = fileURLToPath(import.meta.url);
+import upload from './drive.cjs';
+
+// from stackoverflow, but
+// TODO: do this without fileURLToPath? I think the "real" node way is to use URLs throughout
+const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename);
 
 // function log(msg) {
@@ -19,6 +23,9 @@ switch (process.argv[2]) {
     case "update":
     case "up":
         update()
+        break
+    case "upload":
+        upload()
         break
     case "hello":
         console.log("Hello S.T.E.A.C.C.")

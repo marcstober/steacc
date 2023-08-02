@@ -1,4 +1,6 @@
 const fs = require('fs').promises;
+const fs0 = require('fs');
+
 const path = require('path');
 const process = require('process');
 // const { authenticate } = require('@google-cloud/local-auth');
@@ -9,7 +11,8 @@ const url = require('url');
 // const open = require('open'); // see below
 
 const destroyer = require('server-destroy'); // TODO: What does this do???
-const { Console } = require('console');
+const { Console, dir } = require('console');
+const dayjs = require("dayjs")
 
 // If modifying these scopes, delete token.json.
 const SCOPES = [
@@ -71,7 +74,7 @@ function getAuthenticatedClient() {
                         const qs = new url.URL(req.url, 'http://localhost:3000').searchParams;
                         const code = qs.get('access_token');
                         console.log(`access_token is ${code}`); // can't get access_token in hash server side!
-                        const fileData = await fs.readFile('oauth2callback.html', 'utf8')
+                        const fileData = await fs.readFile(path.join(__dirname, 'oauth2callback.html'), 'utf8')
                         res.writeHead(200, { 'Content-Type': 'text/html' })
                         // res.write(fileData)
                         res.end(fileData)
@@ -81,8 +84,9 @@ function getAuthenticatedClient() {
                         const qs = new url.URL(req.url, 'http://localhost:3000').searchParams;
                         const code = qs.get('access_token');
                         console.log(`access_token is ${code}`);
-                        res.end('Authentication successful! Please return to the console.');
-                        // TODO: redirect to google drive
+                        // redirect to google drive
+                        res.writeHead(302, { 'Location': 'https://drive.google.com' })
+                        res.end();
                         server.destroy();
 
                         // Now that we have the code, use that to acquire tokens.
@@ -200,35 +204,107 @@ async function listFiles(authClient) {
 }
 
 async function uploadBasic(authClient) {
-    const fs = require('fs');
     const drive = google.drive({ version: 'v3', auth: authClient });
 
+
+
+
+    let fileId = await uploadDir(drive, process.cwd());
+
+
+    return fileId
+
+}
+
+
+async function uploadDir(drive, dirname, fileId, parentFileId) {
+    let name = path.basename(dirname)
+
+    if (dirname === process.cwd()) {
+        name = path.basename(process.cwd())
+        name += dayjs().format("-YYYY-MM-DD-HH-mm-ss")
+    }
+
+    console.log(`Uploading '${dirname}' as '${name}'...`);
     const requestBody = {
-        name: 'README.md',
+        name: name,
         fields: 'id',
+        mimeType: "application/vnd.google-apps.folder"
     };
-    const media = {
-        // mimeType: 'image/jpeg',
-        body: fs.createReadStream('README.md'),
-    };
+    if (parentFileId) {
+        requestBody.parents = [parentFileId]
+    }
+    // const media = {
+    //     mimeType: 'image/jpeg',
+    //     body: fs.createReadStream('README.md'),
+    // };
     try {
         const file = await drive.files.create({
             requestBody,
-            media: media,
+            //  media: media,
         });
         console.log('File Id:', file.data.id);
-        return file.data.id;
+        fileId = file.data.id;
     } catch (err) {
         // TODO(developer) - Handle error
         throw err;
     }
+
+    const newParentFileId = fileId
+
+    // now upload all the files in the directory
+
+    // upload files in the directory
+    let counter = 0
+    console.log(`Reading '${dirname}'...`)
+    const files = fs0.readdirSync(dirname)
+    console.log(files)
+
+    for (let fn of files) {
+        fn = path.join(dirname, fn)
+        console.log(fn)
+        if (fs0.lstatSync(fn).isDirectory()) {
+            console.log("is a directory") // TODO: create directory
+            fileId = await uploadDir(drive, fn, newParentFileId, newParentFileId)
+        }
+        else {
+            const requestBody = {
+                name: path.basename(fn),
+                fields: 'id',
+                parents: [newParentFileId]
+            };
+            const media = {
+                // mimeType: 'image/jpeg',
+                body: fs0.createReadStream(fn),
+            };
+            try {
+                const file = await drive.files.create({
+                    requestBody,
+                    media: media,
+                });
+                console.log('File Id:', file.data.id);
+                counter++
+            } catch (err) {
+                // TODO(developer) - Handle error
+                throw err;
+            }
+        }
+    }
+    console.log(`Uploaded ${counter} files.`)
+
+
+    return newParentFileId;
 }
 
-
 let open
-import("open").then(obj => {
-    open = obj.default
-    console.log(open)
-    // authorize().then(listFiles).catch(console.error);
-    getAuthenticatedClient().then(uploadBasic).catch(console.error)
-})
+function upload() {
+
+    import("open").then(obj => {
+        open = obj.default
+        console.log(open)
+        // authorize().then(listFiles).catch(console.error);
+        getAuthenticatedClient().then(uploadBasic).catch(console.error)
+    })
+}
+
+module.exports = upload
