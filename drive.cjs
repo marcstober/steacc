@@ -204,16 +204,13 @@ async function listFiles(authClient) {
 }
 
 async function uploadBasic(authClient) {
+    // https://developers.google.com/drive/api/guides/folder#create
+    
     const drive = google.drive({ version: 'v3', auth: authClient });
-
-
-
 
     let fileId = await uploadDir(drive, process.cwd());
 
-
     return fileId
-
 }
 
 
