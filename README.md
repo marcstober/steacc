@@ -25,8 +25,19 @@ st hello
    * ASCII art
    * Rules, etc.
 * project selection as a menu (includes new project option by default)
+* project selection as a menu (includes new project option by default) - use readline-sync
+   * Deprecate/remove question-asker in favor of readline sync
 * Install p5.vscode (or, a replacement/update for it)
    * 4 spaces
    * no semicolons
+   * install P5 and P5.sound via NPM instead?
 * Install p5play (via NPM)
 * Install p5play VSCode extension?
+* Uploader
+   * Uploader as `st upload`
+   * Unit test including that all files are uploaded in the correct folder structure
+   * Refactor, convert to EJS module
+   * progress bar in the browser before redirecting to Google
+* Onboarding Experience
+   * ASCII art
+   * Rules, etc.
