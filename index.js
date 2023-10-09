@@ -27,6 +27,9 @@ switch (process.argv[2]) {
     case "upload":
         upload()
         break
+    case "installp5p":
+        installp5p()
+        break
     case "hello":
         console.log("Hello S.T.E.A.C.C.")
         break
@@ -93,6 +96,16 @@ switch (process.argv[2]) {
 
 function update() {
     child_process.exec('npm update -g @marcstober/steacc', (err, stdout, stderr) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        console.log(stdout);
+    })
+}
+
+function installp5p() {
+     child_process.exec('npm i p5play', (err, stdout, stderr) => {
         if (err) {
             console.error(err);
             return;
