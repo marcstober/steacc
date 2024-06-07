@@ -9,6 +9,8 @@ import { fileURLToPath } from 'node:url';
 
 import upload from './drive.cjs';
 
+import { version } from "./version.js";
+
 // from stackoverflow, but
 // TODO: do this without fileURLToPath? I think the "real" node way is to use URLs throughout
 const __filename = fileURLToPath(import.meta.url)
@@ -30,8 +32,11 @@ switch (process.argv[2]) {
     case "hello":
         console.log("Hello S.T.E.A.C.C.")
         break
-    default:
-        let name, projectName
+  case "version":
+    console.log(version);
+    break
+  default:
+    let name, projectName
 
         while (true) {
             name = await askQuestion("Coder name: ")

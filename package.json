@@ -1,6 +1,6 @@
 {
   "name": "@marcstober/steacc",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -12,6 +12,7 @@
     "steacc": "./index.js"
   },
   "scripts": {
+    "build": "genversion version.js --esm",
     "test": "echo \"Error: no test specified\" && exit 1",
     "install": "powershell.exe ./install.ps1"
   },
@@ -27,5 +28,8 @@
     "googleapis": "^105.0.0",
     "open": "^9.1.0",
     "server-destroy": "^1.0.1"
+  },
+  "devDependencies": {
+    "genversion": "^3.2.0"
   }
 }

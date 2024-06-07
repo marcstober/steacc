@@ -15,12 +15,17 @@ Prompt for coder name and project, and switch to folder.
 ```
 st update
 ```
-Update S.T.E.A.C.C. `st up` also works
+Update S.T.E.A.C.C. `st up` also works.
 
 ```
 st upload
 ```
 Google Drive uploader
+
+```
+st version
+```
+Get the version number.
 
 ```
 st hello
