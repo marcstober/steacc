@@ -11,6 +11,8 @@ import upload from './drive.cjs';
 
 import { version } from "./version.js";
 
+import onboarding from "./onboarding.js";
+
 // from stackoverflow, but
 // TODO: do this without fileURLToPath? I think the "real" node way is to use URLs throughout
 const __filename = fileURLToPath(import.meta.url)
@@ -32,11 +34,11 @@ switch (process.argv[2]) {
     case "hello":
         console.log("Hello S.T.E.A.C.C.")
         break
-  case "version":
-    console.log(version);
-    break
-  default:
-    let name, projectName
+    case "version":
+        console.log(version);
+        break
+    default:
+        let name, projectName
 
         while (true) {
             name = await askQuestion("Coder name: ")
@@ -47,24 +49,29 @@ switch (process.argv[2]) {
             break
         }
 
+        // see if directory exists
+        let isOnboarding = false
+        if (fs.existsSync(`C:\\${name}\\`)) {
+            console.log(`Welcome back, ${name}!`)
+        }
+        else {
+            isOnboarding = true
+            const contentDir = path.join(__dirname, "content")
+
+            await onboarding.run(name, contentDir)
+        }
+
         while (true) {
+            if (isOnboarding) {
+                console.log("Now you must choose a name for your first project.")
+                console.log("Remember the name you choose; you will use it to get back to your code.")
+            }
             projectName = await askQuestion("Project name: ")
             if (/\s/.test(projectName)) {
                 console.log("No spaces allowed")
                 continue
             }
             break
-        }
-
-        // see if directory exists
-        if (fs.existsSync(`C:\\${name}\\`)) {
-            console.log(`Welcome back, ${name}!`)
-        }
-        else {
-            console.log(`Welcome, ${name}!`)
-            console.log("Creating directory...")
-            console.log(`mkdir C:\\${name}\\`)
-            fs.mkdirSync(`C:\\${name}\\`)
         }
 
         if (projectName) {

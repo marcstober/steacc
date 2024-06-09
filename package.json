@@ -26,8 +26,12 @@
     "dayjs": "^1.11.9",
     "google-auth-library": "^9.0.0",
     "googleapis": "^105.0.0",
+    "marked": "^12.0.2",
+    "marked-directive": "^1.0.5",
+    "marked-terminal": "^7.0.0",
     "open": "^9.1.0",
-    "server-destroy": "^1.0.1"
+    "server-destroy": "^1.0.1",
+    "strip-ansi": "^7.1.0"
   },
   "devDependencies": {
     "genversion": "^3.2.0"
