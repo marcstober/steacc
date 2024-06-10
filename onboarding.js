@@ -5,6 +5,7 @@ import { createDirectives } from 'marked-directive';
 import { askQuestion } from './question-asker.js'
 import stripAnsi from 'strip-ansi';
 import path from 'node:path'
+import figlet from 'figlet';
 
 let contentDir = ""
 
@@ -12,7 +13,17 @@ async function run(name, cd) {
 
     contentDir = cd
 
-    console.log(`Welcome, ${name}!`);
+    console.log(
+        figlet.textSync(`Welcome,`, {
+            width: process.stdout.columns
+        })
+    )
+    console.log(
+        figlet.textSync(`${name}`, {
+            font: 'Small Keyboard',
+            width: process.stdout.columns
+        })
+    )
 
     await askQuestion("Press ENTER to continue..."); // TODO: any key
 

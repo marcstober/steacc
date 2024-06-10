@@ -13,7 +13,7 @@ import { version } from "./version.js";
 
 import onboarding from "./onboarding.js";
 
-// import figlet from 'figlet';
+import figlet from 'figlet';
 
 // from stackoverflow, but
 // TODO: do this without fileURLToPath? I think the "real" node way is to use URLs throughout
@@ -40,19 +40,19 @@ switch (process.argv[2]) {
     case "version":
         console.log(version);
         break
-    // case "figlet-fonts":
-    //     child_process.exec('figlet -l', (err, stdout, stderr) => {
-    //         if (err) {
-    //             console.error(err);
-    //             return;
-    //         }
-    //         for (let line of stdout.split('\n')) {
-    //             console.log(line)
-    //             const fancyText = figlet.textSync('Hello, World!', { font: line, width: 80 });
-    //             console.log(fancyText)
-    //         }
-    //     })
-    //     break
+    case "figlet-fonts":
+        child_process.exec('figlet -l', (err, stdout, stderr) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            for (let line of stdout.split('\n')) {
+                console.log(line)
+                const fancyText = figlet.textSync('Hello, World!', { font: line, width: 80 });
+                console.log(fancyText)
+            }
+        })
+        break
     default:
         let name, projectName
 
@@ -68,7 +68,17 @@ switch (process.argv[2]) {
         // see if directory exists
         let isOnboarding = false
         if (fs.existsSync(`C:\\${name}\\`)) {
-            console.log(`Welcome back, ${name}!`)
+            console.log(
+                figlet.textSync(`Welcome back,`, {
+                    width: process.stdout.columns
+                })
+            )
+            console.log(
+                figlet.textSync(`${name}`, {
+                    font: 'Small Keyboard',
+                    width: process.stdout.columns
+                })
+            )
         }
         else {
             isOnboarding = true
