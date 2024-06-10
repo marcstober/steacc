@@ -13,6 +13,8 @@ import { version } from "./version.js";
 
 import onboarding from "./onboarding.js";
 
+// import figlet from 'figlet';
+
 // from stackoverflow, but
 // TODO: do this without fileURLToPath? I think the "real" node way is to use URLs throughout
 const __filename = fileURLToPath(import.meta.url)
@@ -28,7 +30,8 @@ switch (process.argv[2]) {
     case "up":
         update()
         break
-    case "upload":
+    case "backup":
+    case "upload": // deprecated
         upload()
         break
     case "hello":
@@ -37,6 +40,19 @@ switch (process.argv[2]) {
     case "version":
         console.log(version);
         break
+    // case "figlet-fonts":
+    //     child_process.exec('figlet -l', (err, stdout, stderr) => {
+    //         if (err) {
+    //             console.error(err);
+    //             return;
+    //         }
+    //         for (let line of stdout.split('\n')) {
+    //             console.log(line)
+    //             const fancyText = figlet.textSync('Hello, World!', { font: line, width: 80 });
+    //             console.log(fancyText)
+    //         }
+    //     })
+    //     break
     default:
         let name, projectName
 

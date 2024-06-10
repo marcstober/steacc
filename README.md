@@ -18,9 +18,9 @@ st update
 Update S.T.E.A.C.C. `st up` also works.
 
 ```
-st upload
+st backup
 ```
-Google Drive uploader
+Backup to Google Drive. (Was `st upload`.)
 
 ```
 st version
