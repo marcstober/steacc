@@ -97,6 +97,9 @@ switch (process.argv[2]) {
                 console.log("No spaces allowed")
                 continue
             }
+            if (projectName === "") {
+                continue
+            }
             break
         }
 
