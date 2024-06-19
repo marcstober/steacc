@@ -33,10 +33,6 @@ st hello
 *I wonder what this does?*
 
 ## TODO
-* Onboarding Experience
-   * ASCII art
-   * Rules, etc.
-* Add a command to open the "web board". (Might have some set-up function so we don't hard-code this URL into github.)
 * project selection as a menu (includes new project option by default) - use readline-sync
    * Deprecate/remove question-asker in favor of readline sync
 * Install p5.vscode (or, a replacement/update for it)
@@ -49,3 +45,8 @@ st hello
    * Unit test including that all files are uploaded in the correct folder structure
    * Refactor, convert to EJS module
    * progress bar in the browser before redirecting to Google
+* Use `ascii-art` for text and images, and remove `figlet`.
+* Onboarding Experience
+   * ASCII art - add an image?
+   * Rules, etc. - make them look nicer?
+* Add a command to open the "web board"? (Might have some set-up function so we don't hard-code this URL into github.)

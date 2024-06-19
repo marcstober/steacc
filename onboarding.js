@@ -87,10 +87,9 @@ async function askForAgreementWithRulesAndExitIfNotAgreed() {
     const agree = answer === "YES"
     if (!agree) {
         console.log("Sorry, you must agree by typing YES to participate in the workshop.")
-        console.log("You can run the **st** program again if you change your mind.")
+        console.log(marked.parse("You can run the **st** program again if you change your mind."))
         process.exit(1)
     }
-    // TODO: record agreement
 }
 
 export default { run }

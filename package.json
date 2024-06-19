@@ -23,6 +23,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@marcstober/ascii-art": "^2.7.1",
     "dayjs": "^1.11.9",
     "figlet": "^1.7.0",
     "google-auth-library": "^9.0.0",
