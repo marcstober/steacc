@@ -7,9 +7,9 @@ async function askQuestion(question) {
         output: process.stdout
     })
 
-    let name = await rl.question(question)
+    let answer = await rl.question(question)
     rl.close()
-    return name
+    return answer
 }
 
 export { askQuestion }
