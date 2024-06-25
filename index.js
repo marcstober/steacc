@@ -92,6 +92,16 @@ switch (process.argv[2]) {
                 console.log("Now you must choose a name for your first project.")
                 console.log("Remember the name you choose; you will use it to get back to your code.")
             }
+            else {
+                const subdirectories = fs.readdirSync(`C:\\${name}`).filter(
+                    file => fs.statSync(`C:\\${name}\\${file}`).isDirectory());
+                console.log("\nExisting projects:\n")
+                // NOTE: NOT using backticks or other string in the line below
+                // so that it's logged as in the more raw way that an array is logged
+                // (e.g., [ "foo", "bar" ])
+                // so learners get used to seeing that.
+                console.log(subdirectories)
+            }
             projectName = await askQuestion("Project name: ")
             if (/\s/.test(projectName)) {
                 console.log("No spaces allowed")

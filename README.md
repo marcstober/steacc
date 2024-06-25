@@ -33,7 +33,6 @@ st hello
 *I wonder what this does?*
 
 ## TODO
-* project selection as a menu (includes new project option by default)
 * Install p5.vscode (or, a replacement/update for it)
    * 4 spaces
    * no semicolons
