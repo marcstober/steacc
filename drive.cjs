@@ -56,9 +56,11 @@ function getAuthenticatedClient() {
         //     access_type: 'offline',
         //     scope: 'https://www.googleapis.com/auth/userinfo.profile',
         // });
+        const encodedScopes = encodeURIComponent(SCOPES.join(" "))
+
         const authorizeUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
             "client_id=" + clientId +
-            "&scope=" + SCOPES[0] + // TODO: Other scopes. URLEncode?
+            "&scope=" + encodedScopes +
             "&redirect_uri=http://localhost:3000/oauth2callback" + // TODO: URLEncode?
             "&response_type=token"; // important!?
 
@@ -205,12 +207,44 @@ async function listFiles(authClient) {
 
 async function uploadBasic(authClient) {
     // https://developers.google.com/drive/api/guides/folder#create
-    
+
     const drive = google.drive({ version: 'v3', auth: authClient });
 
     let fileId = await uploadDir(drive, process.cwd());
 
+    const folderWebViewLink = await getFolderWebViewLink(drive, fileId);
+
+    console.log('Folder link:', folderWebViewLink);
+
     return fileId
+}
+
+// Function to get the webViewLink of the folder containing the file
+async function getFolderWebViewLink(drive, fileId) {
+    try {
+        // Get the file's metadata to find the parent's ID
+        const fileMetadata = await drive.files.get({
+            fileId: fileId,
+            fields: 'parents, webViewLink'
+        });
+        const parentId = fileMetadata.data.parents[0];
+
+
+        console.log('Parent Id:', parentId, " ", fileMetadata.data.parents.length, "*");
+
+        console.log('webViewLink:', fileMetadata.data.webViewLink);
+
+        // Get the parent folder's metadata to find the webViewLink
+        const folderMetadata = await drive.files.get({
+            // fileId: parentId,
+            fileId: parentId,
+            fields: 'webViewLink'
+        });
+        return folderMetadata.data.webViewLink;
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
 }
 
 
