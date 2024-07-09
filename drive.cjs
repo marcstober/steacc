@@ -86,10 +86,6 @@ function getAuthenticatedClient() {
                         const qs = new url.URL(req.url, 'http://localhost:3000').searchParams;
                         const code = qs.get('access_token');
                         console.log(`access_token is ${code}`);
-                        // redirect to google drive
-                        res.writeHead(302, { 'Location': 'https://drive.google.com' })
-                        res.end();
-                        server.destroy();
 
                         // Now that we have the code, use that to acquire tokens.
                         // const r = await oAuth2Client.getToken(code);
@@ -97,9 +93,26 @@ function getAuthenticatedClient() {
                         // oAuth2Client.setCredentials(r.tokens);
                         oAuth2Client.setCredentials({ access_token: code })
                         console.info('Tokens acquired.');
-                        resolve(oAuth2Client);
+
+
+                        // upload here to get fileId and redirect to parent folder page
+                        const fileId = await uploadBasic(oAuth2Client);
+                        console.log("file id is", fileId)
+
+                        // TODO: Have web page say "uploading"
+                        const drive = google.drive({ version: 'v3', auth: oAuth2Client });
+
+                        const folderWebViewLink = await getFolderWebViewLink(drive, fileId);
+
+                        // redirect to google drive
+                        res.writeHead(302, { 'Location': folderWebViewLink })
+                        res.end();
+                        server.destroy();
+
+                        resolve()
                     }
                 } catch (e) {
+                    console.error(e)
                     reject(e);
                 }
             })
@@ -211,10 +224,6 @@ async function uploadBasic(authClient) {
     const drive = google.drive({ version: 'v3', auth: authClient });
 
     let fileId = await uploadDir(drive, process.cwd());
-
-    const folderWebViewLink = await getFolderWebViewLink(drive, fileId);
-
-    console.log('Folder link:', folderWebViewLink);
 
     return fileId
 }
@@ -334,7 +343,7 @@ function upload() {
         open = obj.default
         console.log(open)
         // authorize().then(listFiles).catch(console.error);
-        getAuthenticatedClient().then(uploadBasic).catch(console.error)
+        getAuthenticatedClient().catch(console.error)
     })
 }
 

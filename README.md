@@ -32,6 +32,11 @@ st hello
 ```
 *I wonder what this does?*
 
+## Change Log
+
+### 0.8.0
+* **st backup:** Start uploading without user needing to "Click to continue", and redirect browser to the actual Google Drive folder we uploaded to when done. 
+
 ## TODO
 * Install p5.vscode (or, a replacement/update for it)
    * 4 spaces

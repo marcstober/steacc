@@ -12,7 +12,15 @@
         <a href="step2?" id="click-me">Click to continue</a>
     </h1>
     <script type="text/javascript">
-        document.getElementById('click-me').href += document.location.hash.substring(1)
+        let clickMeLink = document.getElementById('click-me')
+
+        clickMeLink.href += document.location.hash.substring(1)
+
+        clickMeLink.addEventListener('click', function (e) {
+            document.getElementsByTagName('h1')[0].innerText = 'Uploading...'
+        })
+
+        clickMeLink.click()
         // alert(document.location.hash.substring(1))
     </script>
 </body>
