@@ -59,24 +59,32 @@ st hello
 
 ### question-asker
 
-I looked for an NPM package that would aallow synchronous (i.e., blocking) user
-input in the terminal so that learners could write simple programs that ask questions
-to the user without first having to learn about promises or callback functions
-(or even how to write functions yet at all, for that matter).
+I looked for an NPM package that would allow synchronous (i.e., blocking) user
+input in the terminal so that learners could write simple programs that ask questions to the user without first having to learn about promises or callback functions (or even how to write functions yet at all, for that matter).
+Like the old `input` command in BASIC. I didn't find anything that quite
+met my needs and seemed to be in line with the state of the art for JavaScript
+in 2024. 
 
 Some other requirements I wanted to fullfill are:
-* Synchronous prompt function is called with `await`, because that's a simple enough thing to 
-   explain ("you use await when you want the computer to wait for something")
-   that gives learners a gentle introduction to how synchronous programmning (i.e., `async`/`await`)
-   works in JavaScript.
+* That the synchronous be called with `await`, because that's 
+what you usually have to do to call a synchronous function in modern JavaScript,
+so I wanted to teach it that way, and it's an appropriate gentle
+introduction to synchronous JavaScript 
+(even if the complexities of why this is needed or how it relates to promises 
+is too advanced at this point) to simply explain, "you use await when you want the computer to wait for something."
 * A simple "one liner" to invoke the prompt, and minimal boilerplate code.
-* Clean and simple implementation based on Node's built-in readline module.
+(The built-in `readline` module requires too much boilerplate; essentially 
+I'm just wrapping that up in a module.)
+* Based on Node's built-in readline module, because there's no need to 
+complicate this further.
 * ESM module, because it's 2024.
 
 Some NPM packages do similar things but don't meet these requirements:
 
-* **readline-sync**: no longer maintained and not ESM.
-* **inquirer**: too complicated to use and very "heavy" (installs **lots** of dependencies).
-* **picoprompt**: almost what I want, but doesn't use `await`, and on further inspect that's done with a more complex internal implementation than I wanted.
+* **readline-sync**: no longer maintained, not ESM.
+* **inquirer**: too complicated and very "heavy" (installs **lots** of dependencies) for what I need.
+* **picoprompt**: almost what I want, but doesn't use `await`, and on further inspect has a complex internal implementation.
 
-Additionally, Node's built-in **readline** module by itself requires more boilerplate than I wanted.
+I thought about publishing this as a package on its own, but any experienced
+programmer should be able to write the few extra lines of boilerplate
+required to use `readline` themselves rather than need a dependency.
