@@ -54,7 +54,11 @@ switch (process.argv[2]) {
         })
         break
     case "winget":
-        child_process.spawn('powershell', ['-File', 'run-winget.ps1'], { shell: true, detached: true });
+        const ps = child_process.spawn('powershell', ['-File', 'run-winget.ps1'], { stdio: "inherit", cwd: __dirname });
+
+        ps.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+        });
         break
     default:
         let name, projectName
