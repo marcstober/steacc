@@ -53,6 +53,9 @@ switch (process.argv[2]) {
             }
         })
         break
+    case "winget":
+        child_process.spawn('powershell', ['-File', 'run-winget.ps1'], { shell: true, detached: true });
+        break
     default:
         let name, projectName
 
@@ -128,6 +131,8 @@ switch (process.argv[2]) {
                 }))
                 fs.copyFileSync(__dirname + '\\question-asker.js',
                     `C:\\${name}\\${projectName}\\question-asker.js`)
+                fs.copyFileSync(__dirname + '\\favicon.ico',
+                    `C:\\${name}\\${projectName}\\favicon.ico`)
 
             }
         }
