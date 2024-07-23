@@ -32,6 +32,7 @@
     "marked-directive": "^1.0.5",
     "marked-terminal": "^7.0.0",
     "open": "^9.1.0",
+    "os": "^0.1.2",
     "server-destroy": "^1.0.1",
     "strip-ansi": "^7.1.0"
   },
