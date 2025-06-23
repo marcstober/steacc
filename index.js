@@ -60,6 +60,17 @@ switch (process.argv[2]) {
             console.log(`child process exited with code ${code}`);
         });
         break
+    case "help":
+        console.log("Available commands:\n" +
+            "  update, up         Update this application\n" +
+            "  backup             Backup project to Google Drive\n" +
+            "  hello              Print a hello message\n" +
+            "  version            Show version\n" +
+            // this still works, but is deprecated
+            // "  figlet-fonts       List figlet fonts\n" +
+            "  winget             Install other software\n" +
+            "  help               Show this help message\n");
+        break
     default:
         let name, projectName
 
