@@ -4,6 +4,8 @@
 
 2. Build package by running `npm run build`.
 
-3. Run `npm publish`.
+3. git push
+
+4. Run `npm publish`.
 
 TODO? Combine steps 2 and 3 into an `npm run release` script?

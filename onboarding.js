@@ -13,6 +13,8 @@ async function run(name, cd) {
 
     contentDir = cd
 
+    console.clear();
+
     console.log(
         figlet.textSync(`Welcome,`, {
             width: process.stdout.columns
@@ -25,7 +27,7 @@ async function run(name, cd) {
         })
     )
 
-    await askQuestion("Press ENTER to continue..."); // TODO: any key
+    await askQuestion("\nPress ENTER to continue..."); // TODO: any key
 
     console.clear();
 
@@ -54,12 +56,18 @@ async function run(name, cd) {
     const parsedText = marked.parse(text);
     console.log(parsedText);
 
-    await askForAgreementWithRulesAndExitIfNotAgreed();
+    await askQuestion("Press ENTER to continue..."); // TODO: any key
+
+    displayPage2()
+
+    await askForAgreementWithRulesAndExitIfNotAgreed("\nTo continue, type YES to indicate you will use the computers responsibly: ");
+
 
     displayHardwareRules()
 
-    await askForAgreementWithRulesAndExitIfNotAgreed();
+    await askForAgreementWithRulesAndExitIfNotAgreed("\nTo continue, enter YES to agree to follow these rules: ");
 
+    console.clear();
     console.log("Creating directory...");
     console.log(`mkdir C:\\${name}\\`);
     fs.mkdirSync(`C:\\${name}\\`);
@@ -72,6 +80,15 @@ async function run(name, cd) {
     fs.writeFileSync(`C:\\${name}\\agreed.json`, jsonData);
 }
 
+function displayPage2() {
+    console.clear();
+
+    const text = fs.readFileSync(path.join(contentDir, 'aup_p2.md'), 'utf8')
+    const parsedText = marked.parse(text);
+    console.log(parsedText);
+}
+
+
 function displayHardwareRules() {
     console.clear();
 
@@ -80,14 +97,14 @@ function displayHardwareRules() {
     console.log(parsedText);
 }
 
-async function askForAgreementWithRulesAndExitIfNotAgreed() {
-    const answer = await askQuestion("Do you agree with these rules? Enter YES or NO: ")
+async function askForAgreementWithRulesAndExitIfNotAgreed(prompt) {
+    const answer = await askQuestion(prompt);
     // This does not accept lowercase or just "Y" or "N" because we make how to handle that
     // a teachable moment later.
     const agree = answer === "YES"
     if (!agree) {
-        console.log("Sorry, you must agree by typing YES to participate in the workshop.")
-        console.log(marked.parse("You can run the **st** program again if you change your mind."))
+        console.log("\nSorry, you must agree by typing YES to participate in the workshop.")
+        console.log(marked.parse("You can run the **st** program again if you change your mind.\n"))
         process.exit(1)
     }
 }

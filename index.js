@@ -98,6 +98,7 @@ switch (process.argv[2]) {
         // see if directory exists
         let isOnboarding = false
         if (fs.existsSync(`C:\\${name}\\`)) {
+            console.clear();
             console.log(
                 figlet.textSync(`Welcome back,`, {
                     width: process.stdout.columns
@@ -119,18 +120,19 @@ switch (process.argv[2]) {
 
         while (true) {
             if (isOnboarding) {
-                console.log("Now you must choose a name for your first project.")
-                console.log("Remember the name you choose; you will use it to get back to your code.")
+                console.log("\n\nNow you must choose a name for your first project.")
+                console.log("Remember the name you choose; you will use it to load your code.")
             }
             else {
                 const subdirectories = fs.readdirSync(`C:\\${name}`).filter(
                     file => fs.statSync(`C:\\${name}\\${file}`).isDirectory());
-                console.log("\nExisting projects:\n")
+                console.log("\nExisting projects:\n\n")
                 // NOTE: NOT using backticks or other string in the line below
                 // so that it's logged as in the more raw way that an array is logged
                 // (e.g., [ "foo", "bar" ])
                 // so learners get used to seeing that.
                 console.log(subdirectories)
+                console.log("\n\nEnter a name from the list above, a new name to create a new project.")
             }
             projectName = await askQuestion("Project name: ")
             if (/\s/.test(projectName)) {
