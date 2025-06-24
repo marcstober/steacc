@@ -96,3 +96,7 @@ Some NPM packages do similar things but don't meet these requirements:
 I thought about publishing this as a package on its own, but any experienced
 programmer should be able to write the few extra lines of boilerplate
 required to use `readline` themselves rather than need a dependency.
+
+## Credits
+
+Steak ASCII art based on: Image by <a href="https://pixabay.com/users/ideativas-tlm-19346105/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=6600564">Raquel Candia</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=6600564">Pixabay</a>

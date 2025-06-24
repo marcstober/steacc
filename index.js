@@ -74,8 +74,20 @@ switch (process.argv[2]) {
     default:
         let name, projectName
 
+        console.log('\x1b[2J\x1b[0f');
+
+        // TODO: force it not to wrap in the console 
+        const splashPath = path.join(__dirname, "content", "splash.txt");
+        const splash = fs.readFileSync(splashPath, "utf-16le");
+        console.log(splash);
+
         while (true) {
             name = await askQuestion("Coder name: ")
+
+            if (name === "") {
+                continue
+            }
+
             if (/\s/.test(name)) {
                 console.log("No spaces allowed")
                 continue
