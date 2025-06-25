@@ -44,7 +44,8 @@ in node > 20.
 * **st backup:** Start uploading without user needing to "Click to continue", and redirect browser to the actual Google Drive folder we uploaded to when done. 
 
 ## TODO
-* Install everything for the workshop. (See install-proco-apps.ps1 elsewhere, cf. winget-install.ps1)
+* Install everything for the workshop. (See install-proco-apps.ps1 elsewhere, cf. winget-install.ps1) - BUT some things are not public and this is an open-source package?
+* It would be nice if this pull request was merged: https://github.com/mikaelbr/marked-terminal/pull/367
 * (Lower priority as of 2025) Install p5.vscode (or, a replacement/update for it)
    * 4 spaces
    * no semicolons

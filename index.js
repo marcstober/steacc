@@ -37,6 +37,15 @@ switch (process.argv[2]) {
     case "hello":
         console.log("Hello S.T.E.A.C.C.")
         break
+    case "surprise":
+        const surprisePs = child_process.spawn(
+            'powershell', ['-File', path.join(__dirname, 'content', 'surprise.ps1')],
+            { stdio: "inherit", cwd: __dirname });
+
+        surprisePs.on('close', (code) => {
+            console.log("I hope you enjoyed your surprise. :)");
+        });
+        break
     case "version":
         console.log(version);
         break
@@ -65,6 +74,7 @@ switch (process.argv[2]) {
             "  update, up         Update this application\n" +
             "  backup             Backup project to Google Drive\n" +
             "  hello              Print a hello message\n" +
+            "  surprise           Try this your own risk!\n" +
             "  version            Show version\n" +
             // this still works, but is deprecated
             // "  figlet-fonts       List figlet fonts\n" +
