@@ -16,8 +16,7 @@
   "scripts": {
     "build": "genversion version.js --esm",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "powershell.exe ./postinstall.ps1",
-    "preuninstall": "powershell.exe ./preuninstall.ps1"
+    "postinstall": "powershell.exe ./postinstall.ps1"
   },
   "keywords": [],
   "author": "",
