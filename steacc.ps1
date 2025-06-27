@@ -1,5 +1,5 @@
 # call the JS file
-steacc_ ($args -join " ")  
+steacc_ @args
 
 $cmd = Join-Path $env:temp steacc-exit-temp.ps1
 if (Test-Path $cmd) { 

@@ -15,6 +15,8 @@ import onboarding from "./onboarding.js";
 
 import figlet from 'figlet';
 
+import AdmZip from 'adm-zip';
+
 // from stackoverflow, but
 // TODO: do this without fileURLToPath? I think the "real" node way is to use URLs throughout
 const __filename = fileURLToPath(import.meta.url)
@@ -38,9 +40,19 @@ switch (process.argv[2]) {
         console.log("Hello S.T.E.A.C.C.")
         break
     case "surprise":
+        // Check for custom surprise first
+        const customSurprisePath = path.join(process.env.USERPROFILE || process.env.HOME, '.steacc', 'surprise', 'surprise.ps1');
+        let surprisePath;
+        
+        if (fs.existsSync(customSurprisePath)) {
+            surprisePath = customSurprisePath;
+        } else {
+            surprisePath = path.join(__dirname, 'content', 'surprise.ps1');
+        }
+
         const surprisePs = child_process.spawn(
-            'powershell', ['-File', path.join(__dirname, 'content', 'surprise.ps1')],
-            { stdio: "inherit", cwd: __dirname });
+            'powershell', ['-File', surprisePath],
+            { stdio: "inherit", cwd: path.dirname(surprisePath) });
 
         surprisePs.on('close', (code) => {
             console.log("I hope you enjoyed your surprise. :)");
@@ -69,12 +81,17 @@ switch (process.argv[2]) {
             console.log(`child process exited with code ${code}`);
         });
         break
+    case "cs":
+        configSurprise()
+        break
     case "help":
         console.log("Available commands:\n" +
             "  update, up         Update this application\n" +
             "  backup             Backup project to Google Drive\n" +
             "  hello              Print a hello message\n" +
             "  surprise           Try this your own risk!\n" +
+            // this is a hidden command
+            // "  cs <zipfile>       Config surprise - install custom surprise\n" +
             "  version            Show version\n" +
             // this still works, but is deprecated
             // "  figlet-fonts       List figlet fonts\n" +
@@ -202,4 +219,66 @@ function update() {
         }
         console.log(stdout);
     })
+}
+
+function configSurprise() {
+    const zipPath = process.argv[3];
+    
+    if (!zipPath) {
+        console.error("Error: Please provide a path to a zip file.");
+        console.log("Usage: steacc cs <path-to-zip-file>");
+        process.exit(1);
+    }
+
+    if (!fs.existsSync(zipPath)) {
+        console.error(`Error: Zip file not found: ${zipPath}`);
+        process.exit(1);
+    }
+
+    // Create .steacc directory in home folder if it doesn't exist
+    const steaccDir = path.join(process.env.USERPROFILE || process.env.HOME, '.steacc');
+    if (!fs.existsSync(steaccDir)) {
+        fs.mkdirSync(steaccDir, { recursive: true });
+        console.log(`Created directory: ${steaccDir}`);
+    }
+
+    const extractDir = path.join(steaccDir, "surprise");
+
+    // create the extraction directory if it does not already exist
+    if (!fs.existsSync(extractDir)) {
+        fs.mkdirSync(extractDir, { recursive: true });
+    }
+
+    console.log(`Extracting ${zipPath} to ${extractDir}...`);
+
+    // Use adm-zip to extract the zip file
+    try {
+        const zip = new AdmZip(zipPath);
+        // Extract each entry to the extractDir, flattening any top-level folder
+        zip.getEntries().forEach(entry => {
+            // Remove the first folder from the entry name if present
+            let entryName = entry.entryName;
+            const parts = entryName.split(/[/\\]/);
+            if (parts.length > 1) {
+            // Remove the first part (top-level folder)
+            entryName = parts.slice(1).join(path.sep);
+            }
+            const targetPath = path.join(extractDir, entryName);
+            if (entry.isDirectory) {
+            fs.mkdirSync(targetPath, { recursive: true });
+            } else {
+            fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+            fs.writeFileSync(targetPath, entry.getData());
+            }
+        });
+        console.log(`Successfully extracted surprise package to: ${extractDir}`);
+        console.log("Contents of extracted directory:");
+        const extractedFiles = fs.readdirSync(extractDir);
+        extractedFiles.forEach(file => {
+            console.log(path.join(extractDir, file));
+        });
+    } catch (err) {
+        console.error(`Failed to extract zip file: ${err.message}`);
+        process.exit(1);
+    }
 }

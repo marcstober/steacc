@@ -25,6 +25,7 @@
     "access": "public"
   },
   "dependencies": {
+    "adm-zip": "^0.5.16",
     "dayjs": "^1.11.9",
     "figlet": "^1.7.0",
     "google-auth-library": "^9.0.0",
