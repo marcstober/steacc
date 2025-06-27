@@ -81,7 +81,8 @@ switch (process.argv[2]) {
             "  winget             Install other software\n" +
             "  help               Show this help message\n");
         break
-    default:
+    case undefined:
+        // No arguments provided - run the default interactive mode
         let name, projectName
 
         console.log('\x1b[2J\x1b[0f');
@@ -185,6 +186,12 @@ switch (process.argv[2]) {
         // the wrapper script will look for this
         const tmpCdFile = path.join(process.env.TEMP, "steacc-exit-temp.ps1")
         fs.writeFileSync(tmpCdFile, cdCommand)
+        break
+    default:
+        // Invalid command provided
+        console.error(`Error: Unknown command '${process.argv[2]}'`);
+        console.log("Run 'steacc help' to see available commands.");
+        process.exit(1);
 }
 
 function update() {

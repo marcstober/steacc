@@ -36,6 +36,18 @@ st hello
 
 ## Change Log
 
+### 2025.4.0
+* Restore (and reduce tech debt) wrapper script, the lack of which
+caused a regression in that changing directories did not function.
+* Show an error, rather than defaulting to the no-args functionality, if an invalid command arg is given. (This especially
+helps when users call `st suprise` instead of `st surprise`.)
+
+### 2025.3.0
+* Surprise feature.
+
+### 2025.2.0
+* Spash screen and onboarding updates.
+
 ### 2025.1.0
 * Remove dependency on ascii-art because of error in installing (because of lack of prebuilt binaries)
 in node > 20.
