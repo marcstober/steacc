@@ -9,12 +9,15 @@
   "type": "module",
   "main": "index.js",
   "bin": {
-    "st": "./index.js",
-    "steacc": "./index.js"
+    "steacc_": "./index.js",
+    "steacc": "./steacc.ps1",
+    "st": "./steacc.ps1"
   },
   "scripts": {
     "build": "genversion version.js --esm",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "powershell.exe ./postinstall.ps1",
+    "preuninstall": "powershell.exe ./preuninstall.ps1"
   },
   "keywords": [],
   "author": "",

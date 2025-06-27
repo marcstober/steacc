@@ -64,7 +64,20 @@ in node > 20.
    * 2025: Replacing this with a folder with a bit.ly link, so I'm not sure this is quite so useful.
 * Make question-asker it's own published npm package? Might be overkill?
 
+## Testing
+
+Ensure the full functionality of changing to a project directory works.
+
+Ensure that uninstalling with `npm uninstall -g` cleans up the bin file (steacc_, steacc, st)
+
 ## Design Decisions
+
+### wrapper script
+
+To support the directory-changing functionality, 
+`st` or `steacc` actually are PowerShell scripts 
+that wrap `steacc_` which is not intended to be called 
+directly.
 
 ### question-asker
 

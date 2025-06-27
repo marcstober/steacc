@@ -158,7 +158,7 @@ switch (process.argv[2]) {
         if (projectName) {
             // see if directory exists
             if (fs.existsSync(`C:\\${name}\\${projectName}\\`)) {
-                console.log(`Loading project: ${name}`)
+                console.log(`Loading project: ${name}\\${projectName}`)
             }
             else {
                 console.log("Creating project...")
@@ -181,10 +181,11 @@ switch (process.argv[2]) {
         if (projectName) {
             cdCommand += `${projectName}\\`
         }
-
-        fs.writeFileSync(process.env.TEMP + '\\st-out.ps1', `"${cdCommand}"\n${cdCommand}\n`)
+        console.log('\x1b[33m%s\x1b[0m', cdCommand)
+        // the wrapper script will look for this
+        const tmpCdFile = path.join(process.env.TEMP, "steacc-exit-temp.ps1")
+        fs.writeFileSync(tmpCdFile, cdCommand)
 }
-
 
 function update() {
     child_process.exec('npm update -g @marcstober/steacc', (err, stdout, stderr) => {
