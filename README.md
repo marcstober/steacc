@@ -34,13 +34,26 @@ st hello
 ```
 *I wonder what this does?*
 
+```
+st help
+```
+Display usage information.
+
+```
+st surprise
+```
+Run a surprise script. The surprise script can be configured with `st cs <zipfile>`. The actual surprise is not distributed with the package
+because that would ruin the surprise and, also, it may contain
+material that I can't share publicly.
+
 ## Change Log
 
 ### 2025.4.0
-* Restore (and reduce tech debt) wrapper script, the lack of which
+* Restore (and reduce tech debt relating to) wrapper script, the lack of which
 caused a regression in that changing directories did not function.
 * Show an error, rather than defaulting to the no-args functionality, if an invalid command arg is given. (This especially
 helps when users call `st suprise` instead of `st surprise`.)
+* Add a hidden `st cs <zipfile>` feature to configure the surprise.'
 
 ### 2025.3.0
 * Surprise feature.
