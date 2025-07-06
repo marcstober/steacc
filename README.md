@@ -46,6 +46,12 @@ Run a surprise script. The surprise script can be configured with `st cs <zipfil
 because that would ruin the surprise and, also, it may contain
 material that I can't share publicly.
 
+This means users can:
+
+* Use steacc `cs surprise.zip` to install a custom surprise package.
+* The zip should contain a `surprise.ps1` file that will be extracted to `~/.steacc/surprise/`.
+* From then on, `steacc surprise` will run their custom surprise instead of the built-in one.
+
 ## Change Log
 
 ### 2025.4.0
