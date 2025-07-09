@@ -8,4 +8,4 @@
 
 4. Run `npm publish`.
 
-TODO? Combine steps 2 and 3 into an `npm run release` script?
+TODO? Combine steps into an `npm run release` script?
