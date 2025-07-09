@@ -6,6 +6,7 @@ import { askQuestion } from './question-asker.js'
 import stripAnsi from 'strip-ansi';
 import path from 'node:path'
 import figlet from 'figlet';
+import { fileURLToPath } from 'node:url';
 
 let contentDir = ""
 
@@ -67,8 +68,10 @@ async function run(name, cd) {
 
     await askForAgreementWithRulesAndExitIfNotAgreed("\nTo continue, enter YES to agree to follow these rules: ");
 
-    console.clear();
-    console.log("Creating directory...");
+    await runLearnTerminal();
+    // DON'T clear the terminal here so we can see "Rick ASCII"
+
+    console.log("\n\nCreating directory...");
     console.log(`mkdir C:\\${name}\\`);
     fs.mkdirSync(`C:\\${name}\\`);
 
@@ -107,6 +110,31 @@ async function askForAgreementWithRulesAndExitIfNotAgreed(prompt) {
         console.log(marked.parse("You can run the **st** program again if you change your mind.\n"))
         process.exit(1)
     }
+}
+
+async function runLearnTerminal() {
+    console.clear();
+
+    console.log("Thank you for agreeing to the rules. Now we will learn how to use the terminal.\n\n");
+
+    const { spawn } = await import('child_process');
+    await new Promise((resolve, reject) => {
+        // find the directory of the current file
+        // and run the learn-terminal.ps1 script in that directory
+        const currentDir = path.dirname(fileURLToPath(import.meta.url));
+        console.log(`Running learn-terminal.ps1 in ${currentDir}`);
+
+        const child = spawn('powershell.exe', ['-File', path.join(currentDir, 'learn-terminal.ps1')], {
+            stdio: 'inherit'
+        });
+        child.on('close', (code) => {
+            process.stdout.write('\x1b[0m'); // Reset terminal colors
+            if (code === 0) resolve();
+            else reject(new Error(`learn-terminal.ps1 exited with code ${code}`));
+        });
+        child.on('error', reject);
+    });
+
 }
 
 export default { run }
