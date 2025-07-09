@@ -28,6 +28,9 @@ const __dirname = path.dirname(__filename);
 
 // log(process.argv[2]) // debugging
 switch (process.argv[2]) {
+    case "learn":
+        learn(process.argv[3]);
+        break
     case "update":
     case "up":
         update()
@@ -86,16 +89,17 @@ switch (process.argv[2]) {
         break
     case "help":
         console.log("Available commands:\n" +
-            "  update, up         Update this application\n" +
+            "  learn <topic>      Learn using an interactive tutorial\n" +
             "  backup             Backup project to Google Drive\n" +
             "  hello              Print a hello message\n" +
             "  surprise           Try this your own risk!\n" +
+            "  update, up         Update this application\n" +
+            "  winget             Install other software\n" +
             // this is a hidden command
             // "  cs <zipfile>       Config surprise - install custom surprise\n" +
             "  version            Show version\n" +
             // this still works, but is deprecated
             // "  figlet-fonts       List figlet fonts\n" +
-            "  winget             Install other software\n" +
             "  help               Show this help message\n");
         break
     case undefined:
@@ -220,6 +224,22 @@ function update() {
         console.log(stdout);
     })
 }
+
+ function learn(topic) {
+    switch (topic) {
+    case "terminal":
+        const ps = child_process.spawn('powershell', ['-File', 'learn-terminal.ps1'], { stdio: "inherit", cwd: __dirname });
+
+        ps.on('close', (code) => {
+        console.log(`learn-terminal.ps1 exited with code ${code}`);
+        });
+        break;
+    default:
+        console.error("Error: Unknown learning topic. Available topics: terminal");
+        break;
+    }
+}
+
 
 function configSurprise() {
     const zipPath = process.argv[3];
