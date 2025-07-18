@@ -54,6 +54,10 @@ This means users can:
 
 ## Change Log
 
+### 2025.6.1
+
+* Prevent UI from displaying "undefined" at beginning of backup.
+
 ### 2025.6.0
 
 * Add progress tracking to `st backup`!

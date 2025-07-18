@@ -34,8 +34,13 @@
                         document.getElementById('click-me').style.display = 'inline';
                         document.getElementById('click-me').click();
                     } else {
-                        document.getElementById('status').innerText =
-                            `Uploading: ${data.currentFile} (${data.currentIndex} of ${data.total})`;
+                        if (data.currentFile) {
+                            document.getElementById('status').innerText =
+                                `Uploading: ${data.currentFile} (${data.currentIndex} of ${data.total})`;
+                        }
+                        else {
+                            document.getElementById('status').innerText = 'Upload starting...';
+                        }
                         setTimeout(pollProgress, 500);
                     }
                 })
