@@ -54,6 +54,10 @@ This means users can:
 
 ## Change Log
 
+### 2025.6.0
+
+* Removed deprecated `upload` subcommand that did the exact same things as `backup`.
+
 ### 2025.5.0
 
 * Add learn command and terminal tutorial, and run as part of onboarding.
@@ -105,7 +109,64 @@ Ensure the full functionality of changing to a project directory works.
 
 Ensure that uninstalling with `npm uninstall -g` cleans up the bin file (steacc_, steacc, st)
 
-## Design Decisions
+## Google Cloud OAuth & Drive API Setup
+
+To use this tool with your own Google account or organization, you must create a Google Cloud project and configure OAuth credentials:
+
+### 1. Create a Google Cloud Project
+- Go to [Google Cloud Console](https://console.cloud.google.com/).
+- Click the project dropdown (top left) and select **New Project**.
+- Give your project a name and create it.
+
+### 2. Enable the Google Drive API
+- In your project, go to **APIs & Services > Library**.
+- Search for **Google Drive API** and click **Enable**.
+
+### 3. Configure OAuth Consent Screen
+- Go to **APIs & Services > OAuth consent screen**.
+- Choose **External** or **Internal** (depending on your needs).
+- Fill out the required fields (app name, support email, etc.).
+- Add scopes:  
+  - `https://www.googleapis.com/auth/drive.file`
+  - `https://www.googleapis.com/auth/drive.metadata.readonly`
+- Add test users (your Google account email).
+
+### 4. Create OAuth 2.0 Credentials
+- Go to **APIs & Services > Credentials**.
+- Click **Create Credentials > OAuth client ID**.
+- Choose **Web application**.
+- Set **Authorized redirect URIs** to:  
+  - `http://localhost:3000/oauth2callback`
+- Download the credentials JSON file and save it as `oauth2.keys.json` in your project directory.
+
+### 5. Update Your Code
+- Replace the `clientId` in your code with the one from your credentials file, or load it from the JSON.
+- Make sure your code points to the correct credentials file.
+
+### 6. (Optional) Share with Others
+- Add their emails as test users in the OAuth consent screen if the app is not published.
+
+---
+
+**Tip:**  
+Keep your credentials file (`oauth2.keys.json`) secure and never commit it to public repositories.
+
+---
+
+**Summary Table for README:**
+
+| Step | Where | What to do |
+|------|-------|------------|
+| 1    | Google Cloud Console | Create a project |
+| 2    | APIs & Services > Library | Enable Google Drive API |
+| 3    | APIs & Services > OAuth consent screen | Configure consent screen & add scopes |
+| 4    | APIs & Services > Credentials | Create OAuth client ID, set redirect URI, download JSON |
+| 5    | Your project | Place JSON as `oauth2.keys.json` and update code if needed |
+
+*This section was written by Copilot.*
+
+
+## Notes
 
 ### wrapper script
 
