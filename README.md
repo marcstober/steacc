@@ -56,6 +56,7 @@ This means users can:
 
 ### 2025.6.0
 
+* Add progress tracking to `st backup`!
 * Removed deprecated `upload` subcommand that did the exact same things as `backup`.
 
 ### 2025.5.0

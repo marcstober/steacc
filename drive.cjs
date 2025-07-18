@@ -14,6 +14,9 @@ const destroyer = require('server-destroy'); // TODO: What does this do???
 const { Console, dir } = require('console');
 const dayjs = require("dayjs")
 
+// --- Upload progress tracking ---
+const uploadProgress = {}
+
 // If modifying these scopes, delete token.json.
 const SCOPES = [
     'https://www.googleapis.com/auth/drive.file',
@@ -69,39 +72,55 @@ function getAuthenticatedClient() {
         const server = http
             .createServer(async (req, res) => {
                 try {
-                    console.log("req.url is:")
-                    console.log(req.originalUrl)
+                    console.log("req.url is:", req.url);
                     if (req.url.indexOf('/oauth2callback') > -1) {
-                        // acquire the code from the querystring, and close the web server.
+                        // acquire the code from the querystring
                         const qs = new url.URL(req.url, 'http://localhost:3000').searchParams;
                         const code = qs.get('access_token');
                         console.log(`access_token is ${code}`); // can't get access_token in hash server side!
-                        const fileData = await fs.readFile(path.join(__dirname, 'oauth2callback.html'), 'utf8')
+                        const session = Math.random().toString(36).substring(2, 10) + Date.now();
+                        let fileData = await fs.readFile(path.join(__dirname, 'oauth2callback.html'), 'utf8')
+                        fileData = fileData.replaceAll('SESSION___ID', session);
                         res.writeHead(200, { 'Content-Type': 'text/html' })
-                        // res.write(fileData)
                         res.end(fileData)
                         // res.end('Authentication successful! Please return to the console.');
                         // TODO: redirect to get the token server-side
-                    } else if (req.url.indexOf('/step2') > -1) {
-                        const qs = new url.URL(req.url, 'http://localhost:3000').searchParams;
+                    } else if (req.url.indexOf('/upload') > -1) {
+                        const parsedUrl = new url.URL(req.url, 'http://localhost:3000');
+                        const qs = parsedUrl.searchParams;
+                        const session = qs.get('session');
                         const code = qs.get('access_token');
-                        console.log(`access_token is ${code}`);
+                        console.log(`access_token is ${code}\nsession is ${session}`);
+                        if (!uploadProgress[session]) {
+                            uploadProgress[session] = {};
+                        }
 
-                        // Now that we have the code, use that to acquire tokens.
-                        // const r = await oAuth2Client.getToken(code);
-                        // Make sure to set the credentials on the OAuth2 client.
-                        // oAuth2Client.setCredentials(r.tokens);
                         oAuth2Client.setCredentials({ access_token: code })
                         console.info('Tokens acquired.');
+                        let fileData = await fs.readFile(path.join(__dirname, 'upload.html'), 'utf8')
+                        fileData = fileData.replaceAll('SESSION___ID', session);
+                        res.writeHead(200, { 'Content-Type': 'text/html' });
+                        res.end(fileData);
 
+                        // Start upload in background, don't await
+                        uploadBasic(oAuth2Client, session).then(fileId => {
+                            // uploading done
+                            console.log("file id is", fileId);
+                            uploadProgress[session].done = true;
+                            uploadProgress[session].topFileId = fileId;
+                        }).catch(err => {
+                            console.error("Upload failed:", err);
+                        });
+                    }
+                    else if (req.url.indexOf('/done') > -1) {
+                        const parsedUrl = new url.URL(req.url, 'http://localhost:3000');
+                        const session = parsedUrl.searchParams.get('session');
 
-                        // upload here to get fileId and redirect to parent folder page
-                        const fileId = await uploadBasic(oAuth2Client);
-                        console.log("file id is", fileId)
+                        console.log(`Done request for session: ${session}`);
 
-                        // TODO: Have web page say "uploading"
+                        fileId = uploadProgress[session].topFileId;
                         const drive = google.drive({ version: 'v3', auth: oAuth2Client });
-
+    
                         const folderWebViewLink = await getFolderWebViewLink(drive, fileId);
 
                         // redirect to google drive
@@ -110,6 +129,21 @@ function getAuthenticatedClient() {
                         server.destroy();
 
                         resolve()
+                    }
+                    // --- Progress endpoint ---
+                    else if (req.url.startsWith('/progress')) {
+                        const parsedUrl = new url.URL(req.url, 'http://localhost:3000');
+                        const session = parsedUrl.searchParams.get('session');
+                        
+                        console.log(`Progress request for session: ${session}`);
+
+                        const progress = uploadProgress[session] || {
+                            currentFile: '',
+                        };
+                        console.log(progress);
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify(progress));
+                        return;
                     }
                 } catch (e) {
                     console.error(e)
@@ -218,12 +252,12 @@ async function listFiles(authClient) {
     });
 }
 
-async function uploadBasic(authClient) {
+async function uploadBasic(authClient, session) {
     // https://developers.google.com/drive/api/guides/folder#create
 
     const drive = google.drive({ version: 'v3', auth: authClient });
 
-    let fileId = await uploadDir(drive, process.cwd());
+    let fileId = await uploadDir(drive, process.cwd(), undefined, undefined, session);
 
     return fileId
 }
@@ -257,7 +291,7 @@ async function getFolderWebViewLink(drive, fileId) {
 }
 
 
-async function uploadDir(drive, dirname, fileId, parentFileId) {
+async function uploadDir(drive, dirname, fileId, parentFileId, session) {
     let name = path.basename(dirname)
 
     if (dirname === process.cwd()) {
@@ -274,14 +308,9 @@ async function uploadDir(drive, dirname, fileId, parentFileId) {
     if (parentFileId) {
         requestBody.parents = [parentFileId]
     }
-    // const media = {
-    //     mimeType: 'image/jpeg',
-    //     body: fs.createReadStream('README.md'),
-    // };
     try {
         const file = await drive.files.create({
             requestBody,
-            //  media: media,
         });
         console.log('File Id:', file.data.id);
         fileId = file.data.id;
@@ -300,12 +329,25 @@ async function uploadDir(drive, dirname, fileId, parentFileId) {
     const files = fs0.readdirSync(dirname)
     console.log(files)
 
-    for (let fn of files) {
-        fn = path.join(dirname, fn)
+    // --- Progress tracking ---
+    uploadProgress[session] = {
+        currentFile: '',
+        currentIndex: 0,
+        total: files.length,
+        done: false
+    };
+
+    for (let i = 0; i < files.length; i++) {
+        let fn = path.join(dirname, files[i])
         console.log(fn)
+        if (session) {
+            uploadProgress[session].currentFile = files[i];
+            uploadProgress[session].currentIndex = i + 1;
+        }
         if (fs0.lstatSync(fn).isDirectory()) {
             console.log("is a directory") // TODO: create directory
-            fileId = await uploadDir(drive, fn, newParentFileId, newParentFileId)
+            fileId = await uploadDir(drive, fn, newParentFileId, newParentFileId, session)
+            uploadProgress[session].total = files.length // restore after reset for child directory
         }
         else {
             const requestBody = {
@@ -314,7 +356,6 @@ async function uploadDir(drive, dirname, fileId, parentFileId) {
                 parents: [newParentFileId]
             };
             const media = {
-                // mimeType: 'image/jpeg',
                 body: fs0.createReadStream(fn),
             };
             try {
@@ -338,12 +379,10 @@ async function uploadDir(drive, dirname, fileId, parentFileId) {
 
 let open
 function upload() {
-
     import("open").then(obj => {
         open = obj.default
         console.log(open)
-        // authorize().then(listFiles).catch(console.error);
-        getAuthenticatedClient().catch(console.error)
+        getAuthenticatedClient().then(() => {}).catch(console.error)
     })
 }
 

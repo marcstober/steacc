@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+    <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+
+<body>
+    <h1>
+        Uploading...
+    </h1>
+    <div id="progress-bar">
+        <div id="progress"></div>
+    </div>
+    <div id="status">Waiting for upload to start...</div>  
+    <a href="done?" id="click-me" style="display: none;">Click to continue</a>
+    
+    <script type="text/javascript">
+        let clickMeLink = document.getElementById('click-me')
+
+        clickMeLink.href += 'session=SESSION___ID';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const session = urlParams.get('session');
+
+        function pollProgress() {
+            fetch('/progress?session=SESSION___ID')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.done) {
+                        document.getElementById('status').innerText = 'Upload complete!';
+                        document.getElementById('click-me').style.display = 'inline';
+                        document.getElementById('click-me').click();
+                    } else {
+                        document.getElementById('status').innerText =
+                            `Uploading: ${data.currentFile} (${data.currentIndex} of ${data.total})`;
+                        setTimeout(pollProgress, 500);
+                    }
+                })
+                .catch((err) => {
+                    console.error(err);
+                    document.getElementById('status').innerText = 'Waiting...';
+                    setTimeout(pollProgress, 1000);
+                });
+        }
+        pollProgress();
+    </script>
+</body>
+
+</html>
