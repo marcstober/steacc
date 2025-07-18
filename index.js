@@ -36,7 +36,6 @@ switch (process.argv[2]) {
         update()
         break
     case "backup":
-    case "upload": // deprecated
         upload()
         break
     case "hello":
