@@ -54,6 +54,10 @@ This means users can:
 
 ## Change Log
 
+### 2025.5.0
+
+* Add learn command and terminal tutorial, and run as part of onboarding.
+
 ### 2025.4.0
 * Restore (and reduce tech debt relating to) wrapper script, the lack of which
 caused a regression in that changing directories did not function.
