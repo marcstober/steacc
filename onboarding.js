@@ -28,7 +28,7 @@ async function run(name, cd) {
         })
     )
 
-    await askQuestion("\nPress ENTER to continue..."); // TODO: any key
+    await pause();
 
     console.clear();
 
@@ -68,9 +68,24 @@ async function run(name, cd) {
 
     await askForAgreementWithRulesAndExitIfNotAgreed("\nTo continue, enter YES to agree to follow these rules: ");
 
-    await runLearnTerminal();
-    // DON'T clear the terminal here so we can see "Rick ASCII"
+    // NOTE: Do this before runLearnTerminal since the lesson refers to this directory having been created.
+    createCamperDirectory(name);
 
+    console.log("Thank you for agreeing to the rules. Now we will learn how to use the terminal.\n\n");
+    await pause(); // so that user can see directory creation message before screen is cleared
+
+    await runLearnTerminal();
+
+    // NOTE: Don't clear terminal after running so we can see the text "Rick ASCII"
+}
+
+async function pause() {
+    // cf. pause command in batch files
+    // TODO: any key
+    await askQuestion("\nPress ENTER to continue...");
+}
+
+function createCamperDirectory(name) {
     console.log("\n\nCreating directory...");
     console.log(`mkdir C:\\${name}\\`);
     fs.mkdirSync(`C:\\${name}\\`);
@@ -114,8 +129,6 @@ async function askForAgreementWithRulesAndExitIfNotAgreed(prompt) {
 
 async function runLearnTerminal() {
     console.clear();
-
-    console.log("Thank you for agreeing to the rules. Now we will learn how to use the terminal.\n\n");
 
     const { spawn } = await import('child_process');
     await new Promise((resolve, reject) => {

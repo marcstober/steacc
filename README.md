@@ -54,6 +54,10 @@ This means users can:
 
 ## Change Log
 
+### 2025.7.0
+
+* Enhancements to terminal tutorial, including using Markdown and Marked for nicely formatted text.
+
 ### 2025.6.1
 
 * Prevent UI from displaying "undefined" at beginning of backup.
