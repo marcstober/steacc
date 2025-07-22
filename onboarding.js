@@ -57,7 +57,7 @@ async function run(name, cd) {
     const parsedText = marked.parse(text);
     console.log(parsedText);
 
-    await askQuestion("Press ENTER to continue..."); // TODO: any key
+    await pause()
 
     displayPage2()
 
