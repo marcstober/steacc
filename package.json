@@ -1,42 +1,42 @@
 {
-  "name": "@marcstober/steacc",
-  "version": "2025.7.0",
-  "description": "",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/marcstober/steacc"
-  },
-  "type": "module",
-  "main": "index.js",
-  "bin": {
-    "steacc_": "./index.js",
-    "steacc": "./steacc.ps1",
-    "st": "./steacc.ps1"
-  },
-  "scripts": {
-    "build": "genversion version.js --esm",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "UNLICENSED",
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "adm-zip": "^0.5.16",
-    "dayjs": "^1.11.9",
-    "figlet": "^1.7.0",
-    "google-auth-library": "^9.0.0",
-    "googleapis": "^105.0.0",
-    "marked": "^12.0.2",
-    "marked-directive": "^1.0.5",
-    "marked-terminal": "^7.0.0",
-    "open": "^9.1.0",
-    "server-destroy": "^1.0.1",
-    "strip-ansi": "^7.1.0"
-  },
-  "devDependencies": {
-    "genversion": "^3.2.0"
-  }
+    "name": "@marcstober/steacc",
+    "version": "2025.7.0",
+    "description": "",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/marcstober/steacc"
+    },
+    "type": "module",
+    "main": "index.js",
+    "bin": {
+        "steacc_": "./index.js",
+        "steacc": "./steacc.ps1",
+        "st": "./steacc.ps1"
+    },
+    "scripts": {
+        "build": "genversion version.js --esm",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "UNLICENSED",
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "adm-zip": "^0.5.16",
+        "dayjs": "^1.11.9",
+        "figlet": "^1.7.0",
+        "google-auth-library": "^9.0.0",
+        "googleapis": "^105.0.0",
+        "marked": "^12.0.2",
+        "marked-directive": "^1.0.5",
+        "marked-terminal": "^7.0.0",
+        "open": "^9.1.0",
+        "server-destroy": "^1.0.1",
+        "strip-ansi": "^7.1.0"
+    },
+    "devDependencies": {
+        "genversion": "^3.2.0"
+    }
 }
