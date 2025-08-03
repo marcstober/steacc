@@ -1,33 +1,33 @@
 #!/usr/bin/env node
 
-import child_process from 'child_process'
-import { askQuestion } from './question-asker.js'
-import * as fs from 'fs'
+import child_process from "child_process"
+import { askQuestion } from "./question-asker.js"
+import * as fs from "fs"
 
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import path from "node:path"
+import { fileURLToPath } from "node:url"
 
-import upload from './drive.cjs';
+import upload from "./drive.cjs"
 
-import { version } from "./version.js";
+import { version } from "./version.js"
 
-import onboarding from "./onboarding.js";
+import onboarding from "./onboarding.js"
 
-import figlet from 'figlet';
+import figlet from "figlet"
 
-import AdmZip from 'adm-zip';
+import AdmZip from "adm-zip"
 
-import os from 'os';
+import os from "os"
 
 // from stackoverflow, but
 // TODO: do this without fileURLToPath? I think the "real" node way is to use URLs throughout
 const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(__filename)
 
-const userFolderPath = os.homedir();
-const fileName = '.st.txt';
+const userFolderPath = os.homedir()
+const fileName = ".st.txt"
 
-const filePath = path.join(userFolderPath, fileName);
+const filePath = path.join(userFolderPath, fileName)
 
 // function log(msg) {
 //     console.log(`STEACC>> ${msg}`)
@@ -36,7 +36,7 @@ const filePath = path.join(userFolderPath, fileName);
 // log(process.argv[2]) // debugging
 switch (process.argv[2]) {
     case "learn":
-        learn(process.argv[3]);
+        learn(process.argv[3])
         break
     case "update":
     case "up":
@@ -50,41 +50,51 @@ switch (process.argv[2]) {
         break
     case "surprise":
         // Check for custom surprise first
-        const customSurprisePath = path.join(process.env.USERPROFILE || process.env.HOME, '.steacc', 'surprise', 'surprise.ps1');
-        let surprisePath;
-        
+        const customSurprisePath = path.join(
+            process.env.USERPROFILE || process.env.HOME,
+            ".steacc",
+            "surprise",
+            "surprise.ps1"
+        )
+        let surprisePath
+
         if (fs.existsSync(customSurprisePath)) {
-            surprisePath = customSurprisePath;
+            surprisePath = customSurprisePath
         } else {
-            surprisePath = path.join(__dirname, 'content', 'surprise.ps1');
+            surprisePath = path.join(__dirname, "content", "surprise.ps1")
         }
 
         const surprisePs = child_process.spawn(
-            'powershell', ['-File', surprisePath],
-            { stdio: "inherit", cwd: path.dirname(surprisePath) });
+            "powershell",
+            ["-File", surprisePath],
+            { stdio: "inherit", cwd: path.dirname(surprisePath) }
+        )
 
-        surprisePs.on('close', (code) => {
-            console.log("I hope you enjoyed your surprise. :)");
-        });
+        surprisePs.on("close", (code) => {
+            console.log("I hope you enjoyed your surprise. :)")
+        })
         break
     case "version":
-        console.log(version);
+        console.log(version)
         break
     case "ver":
-        console.log(version);
+        console.log(version)
         break
     case "ver":
-        console.log(version);
+        console.log(version)
         break
     case "figlet-fonts":
-        child_process.exec('figlet -l', (err, stdout, stderr) => {
+        child_process.exec("figlet -l", (err, stdout, stderr) => {
             if (err) {
-                console.error(err);
-                return;
+                console.error(err)
+                return
             }
-            for (let line of stdout.split('\n')) {
+            for (let line of stdout.split("\n")) {
                 console.log(line)
-                const fancyText = figlet.textSync('Hello, World!', { font: line, width: 80 });
+                const fancyText = figlet.textSync("Hello, World!", {
+                    font: line,
+                    width: 80,
+                })
                 console.log(fancyText)
             }
         })
@@ -98,39 +108,46 @@ switch (process.argv[2]) {
             const writeToFile = (filePath, content) => {
                 fs.writeFile(filePath, content, (err) => {
                     if (err) {
-                        console.error('Error writing to the file:', err);
+                        console.error("Error writing to the file:", err)
                     } else {
-                        console.log('File .st.txt written successfully in the user folder');
+                        console.log(
+                            "File .st.txt written successfully in the user folder"
+                        )
                     }
-                });
-            };
+                })
+            }
             const openURLInBrowser = (url) => {
-                const start = process.platform == 'darwin' ? 'open' :
-                              process.platform == 'win32' ? 'start' :
-                              'xdg-open';
+                const start =
+                    process.platform == "darwin"
+                        ? "open"
+                        : process.platform == "win32"
+                        ? "start"
+                        : "xdg-open"
                 exec(`${start} ${url}`, (err) => {
                     if (err) {
-                        console.error('Error opening URL in browser:', err);
+                        console.error("Error opening URL in browser:", err)
                     } else {
-                        console.log('URL opened in browser successfully');
+                        console.log("URL opened in browser successfully")
                     }
-                });
-            };
-            
+                })
+            }
+
             // Check if the file already exists
             if (fs.existsSync(filePath)) {
-                console.log('File .st.txt already exists. Clearing contents and writing new URL.');
-                writeToFile(filePath, URL);
+                console.log(
+                    "File .st.txt already exists. Clearing contents and writing new URL."
+                )
+                writeToFile(filePath, URL)
             } else {
                 // Create the file '.st.txt' and write the URL to it
-                console.log('Creating file .st.txt and writing URL.');
-                writeToFile(filePath, URL);
+                console.log("Creating file .st.txt and writing URL.")
+                writeToFile(filePath, URL)
             }
         } else {
             // open in browser
             if (fs.existsSync(filePath)) {
-                const URL = fs.readFileSync(filePath, 'utf8').trim();
-                openURLInBrowser(URL);
+                const URL = fs.readFileSync(filePath, "utf8").trim()
+                openURLInBrowser(URL)
             }
         }
         break
@@ -138,30 +155,32 @@ switch (process.argv[2]) {
         configSurprise()
         break
     case "help":
-        console.log("Available commands:\n" +
-            "  learn <topic>      Learn using an interactive tutorial\n" +
-            "  backup             Backup project to Google Drive\n" +
-            "  hello              Print a hello message\n" +
-            "  surprise           Try this your own risk!\n" +
-            "  update, up         Update this application\n" +
-            "  winget             Install other software\n" +
-            // this is a hidden command
-            // "  cs <zipfile>       Config surprise - install custom surprise\n" +
-            "  version            Show version\n" +
-            // this still works, but is deprecated
-            // "  figlet-fonts       List figlet fonts\n" +
-            "  help               Show this help message\n");
+        console.log(
+            "Available commands:\n" +
+                "  learn <topic>      Learn using an interactive tutorial\n" +
+                "  backup             Backup project to Google Drive\n" +
+                "  hello              Print a hello message\n" +
+                "  surprise           Try this your own risk!\n" +
+                "  update, up         Update this application\n" +
+                "  winget             Install other software\n" +
+                // this is a hidden command
+                // "  cs <zipfile>       Config surprise - install custom surprise\n" +
+                "  version            Show version\n" +
+                // this still works, but is deprecated
+                // "  figlet-fonts       List figlet fonts\n" +
+                "  help               Show this help message\n"
+        )
         break
     case undefined:
         // No arguments provided - run the default interactive mode
         let name, projectName
 
-        console.log('\x1b[2J\x1b[0f');
+        console.log("\x1b[2J\x1b[0f")
 
-        // TODO: force it not to wrap in the console 
-        const splashPath = path.join(__dirname, "content", "splash.txt");
-        const splash = fs.readFileSync(splashPath, "utf-16le");
-        console.log(splash);
+        // TODO: force it not to wrap in the console
+        const splashPath = path.join(__dirname, "content", "splash.txt")
+        const splash = fs.readFileSync(splashPath, "utf-16le")
+        console.log(splash)
 
         while (true) {
             name = await askQuestion("Coder name: ")
@@ -180,20 +199,19 @@ switch (process.argv[2]) {
         // see if directory exists
         let isOnboarding = false
         if (fs.existsSync(`C:\\${name}\\`)) {
-            console.clear();
+            console.clear()
             console.log(
                 figlet.textSync(`Welcome back,`, {
-                    width: process.stdout.columns
+                    width: process.stdout.columns,
                 })
             )
             console.log(
                 figlet.textSync(`${name}`, {
-                    font: 'Small Keyboard',
-                    width: process.stdout.columns
+                    font: "Small Keyboard",
+                    width: process.stdout.columns,
                 })
             )
-        }
-        else {
+        } else {
             isOnboarding = true
             const contentDir = path.join(__dirname, "content")
 
@@ -202,19 +220,27 @@ switch (process.argv[2]) {
 
         while (true) {
             if (isOnboarding) {
-                console.log("\n\nNow you must choose a name for your first project.")
-                console.log("Remember the name you choose; you will use it to load your code.")
-            }
-            else {
-                const subdirectories = fs.readdirSync(`C:\\${name}`).filter(
-                    file => fs.statSync(`C:\\${name}\\${file}`).isDirectory());
+                console.log(
+                    "\n\nNow you must choose a name for your first project."
+                )
+                console.log(
+                    "Remember the name you choose; you will use it to load your code."
+                )
+            } else {
+                const subdirectories = fs
+                    .readdirSync(`C:\\${name}`)
+                    .filter((file) =>
+                        fs.statSync(`C:\\${name}\\${file}`).isDirectory()
+                    )
                 console.log("\nExisting projects:\n\n")
                 // NOTE: NOT using backticks or other string in the line below
                 // so that it's logged as in the more raw way that an array is logged
                 // (e.g., [ "foo", "bar" ])
                 // so learners get used to seeing that.
                 console.log(subdirectories)
-                console.log("\n\nEnter a name from the list above, a new name to create a new project.")
+                console.log(
+                    "\n\nEnter a name from the list above, a new name to create a new project."
+                )
             }
             projectName = await askQuestion("Project name: ")
             if (/\s/.test(projectName)) {
@@ -231,20 +257,25 @@ switch (process.argv[2]) {
             // see if directory exists
             if (fs.existsSync(`C:\\${name}\\${projectName}\\`)) {
                 console.log(`Loading project: ${name}\\${projectName}`)
-            }
-            else {
+            } else {
                 console.log("Creating project...")
                 console.log(`mkdir C:\\${name}\\${projectName}\\`)
                 fs.mkdirSync(`C:\\${name}\\${projectName}\\`)
                 // TODO: create a more complete package.json?
-                fs.writeFileSync(`C:\\${name}\\${projectName}\\package.json`, JSON.stringify({
-                    "type": "module"
-                }))
-                fs.copyFileSync(__dirname + '\\question-asker.js',
-                    `C:\\${name}\\${projectName}\\question-asker.js`)
-                fs.copyFileSync(__dirname + '\\favicon.ico',
-                    `C:\\${name}\\${projectName}\\favicon.ico`)
-
+                fs.writeFileSync(
+                    `C:\\${name}\\${projectName}\\package.json`,
+                    JSON.stringify({
+                        type: "module",
+                    })
+                )
+                fs.copyFileSync(
+                    __dirname + "\\question-asker.js",
+                    `C:\\${name}\\${projectName}\\question-asker.js`
+                )
+                fs.copyFileSync(
+                    __dirname + "\\favicon.ico",
+                    `C:\\${name}\\${projectName}\\favicon.ico`
+                )
             }
         }
 
@@ -253,128 +284,151 @@ switch (process.argv[2]) {
         if (projectName) {
             cdCommand += `${projectName}\\`
         }
-        console.log('\x1b[33m%s\x1b[0m', cdCommand)
+        console.log("\x1b[33m%s\x1b[0m", cdCommand)
         // the wrapper script will look for this
         const tmpCdFile = path.join(process.env.TEMP, "steacc-exit-temp.ps1")
         fs.writeFileSync(tmpCdFile, cdCommand)
         break
     default:
         // Invalid command provided
-        console.error(`Error: Unknown command '${process.argv[2]}'`);
-        console.log("Run 'steacc help' to see available commands.");
-        process.exit(1);
+        console.error(`Error: Unknown command '${process.argv[2]}'`)
+        console.log("Run 'steacc help' to see available commands.")
+        process.exit(1)
 }
 
 function update() {
-    child_process.exec('npm update -g @marcstober/steacc', (err, stdout, stderr) => {
-        if (err) {
-            console.error(err);
-            return;
+    child_process.exec(
+        "npm update -g @marcstober/steacc",
+        (err, stdout, stderr) => {
+            if (err) {
+                console.error(err)
+                return
+            }
+            console.log(stdout)
         }
-        console.log(stdout);
-    })
+    )
 }
 
- function learn(topic) {
+function learn(topic) {
     switch (topic) {
-    case "terminal":
-        const ps = child_process.spawn('powershell', ['-File', 'learn-terminal.ps1'], { stdio: "inherit", cwd: __dirname });
+        case "terminal":
+            const ps = child_process.spawn(
+                "powershell",
+                ["-File", "learn-terminal.ps1"],
+                { stdio: "inherit", cwd: __dirname }
+            )
 
-        ps.on('close', (code) => {
-        console.log(`learn-terminal.ps1 exited with code ${code}`);
-        });
-        break;
-    default:
-        console.error("Error: Unknown learning topic. Available topics: terminal");
-        break;
+            ps.on("close", (code) => {
+                console.log(`learn-terminal.ps1 exited with code ${code}`)
+            })
+            break
+        default:
+            console.error(
+                "Error: Unknown learning topic. Available topics: terminal"
+            )
+            break
     }
-function installp5p() {
-    console.log("Installing p5.play...")  // TODO: replace with npm install p5play when it's available in npm.
-    child_process.exec('npm i p5play', (err, stdout, stderr) => {
-       if (err) {
-           console.error(err);
-           return;
-       }
-       console.log(stdout);
-   })
-}
-
-
-function configSurprise() {
-    const zipPath = process.argv[3];
-    
-    if (!zipPath) {
-        console.error("Error: Please provide a path to a zip file.");
-        console.log("Usage: steacc cs <path-to-zip-file>");
-        process.exit(1);
-    }
-
-    if (!fs.existsSync(zipPath)) {
-        console.error(`Error: Zip file not found: ${zipPath}`);
-        process.exit(1);
-    }
-
-    // Create .steacc directory in home folder if it doesn't exist
-    const steaccDir = path.join(process.env.USERPROFILE || process.env.HOME, '.steacc');
-    if (!fs.existsSync(steaccDir)) {
-        fs.mkdirSync(steaccDir, { recursive: true });
-        console.log(`Created directory: ${steaccDir}`);
-    }
-
-    const extractDir = path.join(steaccDir, "surprise");
-
-    // create the extraction directory if it does not already exist
-    if (!fs.existsSync(extractDir)) {
-        fs.mkdirSync(extractDir, { recursive: true });
-    }
-
-    console.log(`Extracting ${zipPath} to ${extractDir}...`);
-
-    // Use adm-zip to extract the zip file
-    try {
-        const zip = new AdmZip(zipPath);
-        // Extract each entry to the extractDir, flattening any top-level folder
-        zip.getEntries().forEach(entry => {
-            // Remove the first folder from the entry name if present
-            let entryName = entry.entryName;
-            const parts = entryName.split(/[/\\]/);
-            if (parts.length > 1) {
-            // Remove the first part (top-level folder)
-            entryName = parts.slice(1).join(path.sep);
+    function installp5p() {
+        console.log("Installing p5.play...") // TODO: replace with npm install p5play when it's available in npm.
+        child_process.exec("npm i p5play", (err, stdout, stderr) => {
+            if (err) {
+                console.error(err)
+                return
             }
-            const targetPath = path.join(extractDir, entryName);
-            if (entry.isDirectory) {
-            fs.mkdirSync(targetPath, { recursive: true });
-            } else {
-            fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-            fs.writeFileSync(targetPath, entry.getData());
-            }
-        });
-        console.log(`Successfully extracted surprise package to: ${extractDir}`);
-        console.log("Contents of extracted directory:");
-        const extractedFiles = fs.readdirSync(extractDir);
-        extractedFiles.forEach(file => {
-            console.log(path.join(extractDir, file));
-        });
-    } catch (err) {
-        console.error(`Failed to extract zip file: ${err.message}`);
-        process.exit(1);
+            console.log(stdout)
+        })
     }
-}
-function setup() {
-    //  Made with <3 by GustyCube (Bennett Schwartz) and Joshua Kellman
-    console.log("Initializing setup...")
+
+    function configSurprise() {
+        const zipPath = process.argv[3]
+
+        if (!zipPath) {
+            console.error("Error: Please provide a path to a zip file.")
+            console.log("Usage: steacc cs <path-to-zip-file>")
+            process.exit(1)
+        }
+
+        if (!fs.existsSync(zipPath)) {
+            console.error(`Error: Zip file not found: ${zipPath}`)
+            process.exit(1)
+        }
+
+        // Create .steacc directory in home folder if it doesn't exist
+        const steaccDir = path.join(
+            process.env.USERPROFILE || process.env.HOME,
+            ".steacc"
+        )
+        if (!fs.existsSync(steaccDir)) {
+            fs.mkdirSync(steaccDir, { recursive: true })
+            console.log(`Created directory: ${steaccDir}`)
+        }
+
+        const extractDir = path.join(steaccDir, "surprise")
+
+        // create the extraction directory if it does not already exist
+        if (!fs.existsSync(extractDir)) {
+            fs.mkdirSync(extractDir, { recursive: true })
+        }
+
+        console.log(`Extracting ${zipPath} to ${extractDir}...`)
+
+        // Use adm-zip to extract the zip file
+        try {
+            const zip = new AdmZip(zipPath)
+            // Extract each entry to the extractDir, flattening any top-level folder
+            zip.getEntries().forEach((entry) => {
+                // Remove the first folder from the entry name if present
+                let entryName = entry.entryName
+                const parts = entryName.split(/[/\\]/)
+                if (parts.length > 1) {
+                    // Remove the first part (top-level folder)
+                    entryName = parts.slice(1).join(path.sep)
+                }
+                const targetPath = path.join(extractDir, entryName)
+                if (entry.isDirectory) {
+                    fs.mkdirSync(targetPath, { recursive: true })
+                } else {
+                    fs.mkdirSync(path.dirname(targetPath), { recursive: true })
+                    fs.writeFileSync(targetPath, entry.getData())
+                }
+            })
+            console.log(
+                `Successfully extracted surprise package to: ${extractDir}`
+            )
+            console.log("Contents of extracted directory:")
+            const extractedFiles = fs.readdirSync(extractDir)
+            extractedFiles.forEach((file) => {
+                console.log(path.join(extractDir, file))
+            })
+        } catch (err) {
+            console.error(`Failed to extract zip file: ${err.message}`)
+            process.exit(1)
+        }
+    }
+    function setup() {
+        //  Made with <3 by GustyCube (Bennett Schwartz) and Joshua Kellman
+        console.log("Initializing setup...")
         console.log("Starting App installation")
-        const ps = child_process.spawn('powershell', ['-File', 'run-winget.ps1'], { stdio: "inherit", cwd: __dirname });
+        const ps = child_process.spawn(
+            "powershell",
+            ["-File", "run-winget.ps1"],
+            { stdio: "inherit", cwd: __dirname }
+        )
         console.log("Installing VS Code extentions")
-        const ExentionInstall = child_process.spawn('powershell', ['-File', 'installExtention.ps1'], { stdio: "inherit", cwd: __dirname });
+        const ExentionInstall = child_process.spawn(
+            "powershell",
+            ["-File", "installExtention.ps1"],
+            { stdio: "inherit", cwd: __dirname }
+        )
         installp5p()
-        ps.on('close', (code) => {
-            console.log(`child process exited with code ${code}`);
-        }); 
-        ExentionInstall.on('close', (code) => {
-            console.log(`p5.play extention installation exited with code ${code}`);
-        });
+        ps.on("close", (code) => {
+            console.log(`child process exited with code ${code}`)
+        })
+        ExentionInstall.on("close", (code) => {
+            console.log(
+                `p5.play extention installation exited with code ${code}`
+            )
+        })
     }
 }
-export { setup } 
+export { setup }
