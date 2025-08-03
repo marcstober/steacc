@@ -375,5 +375,6 @@ function setup() {
         ExentionInstall.on('close', (code) => {
             console.log(`p5.play extention installation exited with code ${code}`);
         });
+    }
 }
 export { setup } 
