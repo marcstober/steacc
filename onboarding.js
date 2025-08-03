@@ -1,4 +1,5 @@
 import * as fs from 'fs'
+import child_process from 'child_process'
 import { marked } from 'marked';
 import { markedTerminal } from 'marked-terminal';
 import { createDirectives } from 'marked-directive';
@@ -7,35 +8,25 @@ import stripAnsi from 'strip-ansi';
 import path from 'node:path'
 import figlet from 'figlet';
 import { fileURLToPath } from 'node:url';
+import { setup } from './index.js';
+
 
 let contentDir = ""
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename);
 
 async function run(name, cd) {
-
     contentDir = cd
 
     console.clear();
 
-    console.log(
-        figlet.textSync(`Welcome,`, {
-            width: process.stdout.columns
-        })
-    )
-    console.log(
-        figlet.textSync(`${name}`, {
-            font: 'Small Keyboard',
-            width: process.stdout.columns
-        })
-    )
+    console.log(figlet.textSync(`Welcome,`, { width: process.stdout.columns }));
+    console.log(figlet.textSync(`${name}`, { font: 'Small Keyboard', width: process.stdout.columns }));
 
     await pause();
-
     console.clear();
 
-
-
     const text = fs.readFileSync(path.join(contentDir, 'aup.md'), 'utf8');
-
     marked.use(markedTerminal(), createDirectives([{
         // TODO: I don't love this syntax. 
         // It seems to violate John Gruber's original principle of 
@@ -50,7 +41,7 @@ async function run(name, cd) {
                 const pad = Math.floor((process.stdout.columns - len) / 2);
                 return `${" ".repeat(pad)}${parsedText.trim()}\n`;
             }
-            return false
+            return false;
         }
     }]));
 
@@ -59,19 +50,17 @@ async function run(name, cd) {
 
     await pause()
 
-    displayPage2()
 
     await askForAgreementWithRulesAndExitIfNotAgreed("\nTo continue, type YES to indicate you will use the computers responsibly: ");
 
 
-    displayHardwareRules()
-
+    displayHardwareRules();
     await askForAgreementWithRulesAndExitIfNotAgreed("\nTo continue, enter YES to agree to follow these rules: ");
-
     // NOTE: Do this before runLearnTerminal since the lesson refers to this directory having been created.
     createCamperDirectory(name);
 
     console.log("Thank you for agreeing to the rules. Now we will learn how to use the terminal.\n\n");
+    await installDeps();  //! Ensure this completes before proceeding
     await pause(); // so that user can see directory creation message before screen is cleared
 
     await runLearnTerminal();
@@ -90,22 +79,10 @@ function createCamperDirectory(name) {
     console.log(`mkdir C:\\${name}\\`);
     fs.mkdirSync(`C:\\${name}\\`);
 
-    const data = {
-        "all": Date.now()
-    };
-
+    const data = { "all": Date.now() };
     const jsonData = JSON.stringify(data, null, 2);
     fs.writeFileSync(`C:\\${name}\\agreed.json`, jsonData);
 }
-
-function displayPage2() {
-    console.clear();
-
-    const text = fs.readFileSync(path.join(contentDir, 'aup_p2.md'), 'utf8')
-    const parsedText = marked.parse(text);
-    console.log(parsedText);
-}
-
 
 function displayHardwareRules() {
     console.clear();
@@ -148,6 +125,13 @@ async function runLearnTerminal() {
         child.on('error', reject);
     });
 
+async function installDeps() {
+    //  Made with <3 by GustyCube (Bennett Schwartz) and Joshua Kellman
+    const answer = await askQuestion("Do you want to install programs? Enter YES or NO: ")
+
+    if (answer === "YES") {
+    setup()
+    }
 }
 
 export default { run }
