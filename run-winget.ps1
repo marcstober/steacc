@@ -1,4 +1,6 @@
 # Made with <3 by GustyCube (Bennett Schwartz) and Joshua Kellman
+Write-Output "Installing Windows Terminal"
+Write-Output "Installing Visual Studio Code"
 Write-Output "Installing Visual Studio Code"
 winget install -e --id Microsoft.VisualStudioCode
 Write-Output "Installing Python"

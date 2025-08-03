@@ -73,6 +73,9 @@ switch (process.argv[2]) {
     case "ver":
         console.log(version);
         break
+    case "ver":
+        console.log(version);
+        break
     case "figlet-fonts":
         child_process.exec('figlet -l', (err, stdout, stderr) => {
             if (err) {

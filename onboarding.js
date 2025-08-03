@@ -16,29 +16,22 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename);
 
 async function run(name, cd) {
-
     contentDir = cd
 
     console.clear();
 
-    console.log(
-        figlet.textSync(`Welcome,`, {
-            width: process.stdout.columns
-        })
-    )
-    console.log(
-        figlet.textSync(`${name}`, {
-            font: 'Small Keyboard',
-            width: process.stdout.columns
-        })
-    )
+    console.log(figlet.textSync(`Welcome,`, { width: process.stdout.columns }));
+    console.log(figlet.textSync(`${name}`, { font: 'Small Keyboard', width: process.stdout.columns }));
 
     await pause();
-
     console.clear();
 
     const text = fs.readFileSync(path.join(contentDir, 'aup.md'), 'utf8');
     marked.use(markedTerminal(), createDirectives([{
+        // TODO: I don't love this syntax. 
+        // It seems to violate John Gruber's original principle of 
+        // Markdown being readable as plain text.
+        // I'd prefer something that looks like HTML, e.g., <center>...</center>.
         level: "block",
         marker: "::",
         renderer(token) {
@@ -57,14 +50,12 @@ async function run(name, cd) {
 
     await pause()
 
-    displayPage2()
 
     await askForAgreementWithRulesAndExitIfNotAgreed("\nTo continue, type YES to indicate you will use the computers responsibly: ");
 
 
     displayHardwareRules();
     await askForAgreementWithRulesAndExitIfNotAgreed("\nTo continue, enter YES to agree to follow these rules: ");
-
     // NOTE: Do this before runLearnTerminal since the lesson refers to this directory having been created.
     createCamperDirectory(name);
 
@@ -92,15 +83,6 @@ function createCamperDirectory(name) {
     const jsonData = JSON.stringify(data, null, 2);
     fs.writeFileSync(`C:\\${name}\\agreed.json`, jsonData);
 }
-
-function displayPage2() {
-    console.clear();
-
-    const text = fs.readFileSync(path.join(contentDir, 'aup_p2.md'), 'utf8')
-    const parsedText = marked.parse(text);
-    console.log(parsedText);
-}
-
 
 function displayHardwareRules() {
     console.clear();
