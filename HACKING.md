@@ -1,3 +1,9 @@
+# Run STEACC from local development code
+
+1. Run inside your project (in terminal): `npm link`
+
+See also: `npm unlink`
+
 # To Build and Publish to NPM
 
 1. Before the final build before publishing, update the version number in `package.json`.
