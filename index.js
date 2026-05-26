@@ -177,6 +177,10 @@ switch (process.argv[2]) {
       break;
     }
 
+    function shell_command_color(command) {
+      return `\x1b[33m${command}\x1b[0m`;
+    }
+
     if (projectName) {
       const projectDir = path.join(camperDir, projectName);
       // see if directory exists
@@ -184,7 +188,7 @@ switch (process.argv[2]) {
         console.log(`Loading project: ${name}\\${projectName}`);
       } else {
         console.log("Creating project...");
-        console.log(`mkdir ${projectDir}\\`);
+        console.log(shell_command_color(`mkdir ${projectDir}\\`));
         fs.mkdirSync(projectDir);
         // TODO: create a more complete package.json?
         fs.writeFileSync(
@@ -199,11 +203,11 @@ switch (process.argv[2]) {
     }
 
     console.log("Changing working directory...");
-    let cdCommand = `cd ${camperDir}\\`;
+    let cdCommand = `pushd ${camperDir}\\`;
     if (projectName) {
       cdCommand += `${projectName}\\`;
     }
-    console.log("\x1b[33m%s\x1b[0m", cdCommand);
+    console.log(shell_command_color(cdCommand));
     // the wrapper script will look for this
     const tmpCdFile = path.join(process.env.TEMP, "steacc-exit-temp.ps1");
     fs.writeFileSync(tmpCdFile, cdCommand);
