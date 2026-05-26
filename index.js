@@ -11,7 +11,7 @@ import upload from "./drive.cjs";
 
 import { version } from "./version.js";
 
-import onboarding from "./onboarding.js";
+import onboarding, { CAMPER_ROOT_DIR } from "./onboarding.js";
 
 import figlet from "figlet";
 
@@ -130,8 +130,9 @@ switch (process.argv[2]) {
     }
 
     // see if directory exists
+    const camperDir = path.join(CAMPER_ROOT_DIR, name);
     let isOnboarding = false;
-    if (fs.existsSync(`C:\\${name}\\`)) {
+    if (fs.existsSync(camperDir)) {
       console.clear();
       console.log(
         figlet.textSync(`Welcome back,`, {
@@ -156,7 +157,7 @@ switch (process.argv[2]) {
         console.log("\n\nNow you must choose a name for your first project.");
         console.log("Remember the name you choose; you will use it to load your code.");
       } else {
-        const subdirectories = fs.readdirSync(`C:\\${name}`).filter((file) => fs.statSync(`C:\\${name}\\${file}`).isDirectory());
+        const subdirectories = fs.readdirSync(camperDir).filter((file) => fs.statSync(path.join(camperDir, file)).isDirectory());
         console.log("\nExisting projects:\n\n");
         // NOTE: NOT using backticks or other string in the line below
         // so that it's logged as in the more raw way that an array is logged
@@ -177,27 +178,28 @@ switch (process.argv[2]) {
     }
 
     if (projectName) {
+      const projectDir = path.join(camperDir, projectName);
       // see if directory exists
-      if (fs.existsSync(`C:\\${name}\\${projectName}\\`)) {
+      if (fs.existsSync(projectDir)) {
         console.log(`Loading project: ${name}\\${projectName}`);
       } else {
         console.log("Creating project...");
-        console.log(`mkdir C:\\${name}\\${projectName}\\`);
-        fs.mkdirSync(`C:\\${name}\\${projectName}\\`);
+        console.log(`mkdir ${projectDir}\\`);
+        fs.mkdirSync(projectDir);
         // TODO: create a more complete package.json?
         fs.writeFileSync(
-          `C:\\${name}\\${projectName}\\package.json`,
+          path.join(projectDir, "package.json"),
           JSON.stringify({
             type: "module",
           })
         );
-        fs.copyFileSync(__dirname + "\\question-asker.js", `C:\\${name}\\${projectName}\\question-asker.js`);
-        fs.copyFileSync(__dirname + "\\favicon.ico", `C:\\${name}\\${projectName}\\favicon.ico`);
+        fs.copyFileSync(__dirname + "\\question-asker.js", path.join(projectDir, "question-asker.js"));
+        fs.copyFileSync(__dirname + "\\favicon.ico", path.join(projectDir, "favicon.ico"));
       }
     }
 
     console.log("Changing working directory...");
-    let cdCommand = `cd C:\\${name}\\`;
+    let cdCommand = `cd ${camperDir}\\`;
     if (projectName) {
       cdCommand += `${projectName}\\`;
     }

@@ -8,6 +8,8 @@ import path from "node:path";
 import figlet from "figlet";
 import { fileURLToPath } from "node:url";
 
+const CAMPER_ROOT_DIR = "C:\\camper";
+
 let contentDir = "";
 
 async function run(name, cd) {
@@ -87,16 +89,18 @@ async function pause() {
 }
 
 function createCamperDirectory(name) {
+  const camperDir = path.join(CAMPER_ROOT_DIR, name);
+
   console.log("\n\nCreating directory...");
-  console.log(`mkdir C:\\${name}\\`);
-  fs.mkdirSync(`C:\\${name}\\`);
+  console.log(`mkdir ${camperDir}\\`);
+  fs.mkdirSync(camperDir, { recursive: true });
 
   const data = {
     all: Date.now(),
   };
 
   const jsonData = JSON.stringify(data, null, 2);
-  fs.writeFileSync(`C:\\${name}\\agreed.json`, jsonData);
+  fs.writeFileSync(path.join(camperDir, "agreed.json"), jsonData);
 }
 
 function displayPage2() {
@@ -150,3 +154,4 @@ async function runLearnTerminal() {
 }
 
 export default { run };
+export { CAMPER_ROOT_DIR };
