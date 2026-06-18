@@ -85,7 +85,7 @@ switch (process.argv[2]) {
     });
     break;
   case "cs":
-    configSurprise();
+    await configSurprise();
     break;
   case "help":
     console.log(
@@ -244,18 +244,42 @@ function learn(topic) {
   }
 }
 
-function configSurprise() {
-  const zipPath = process.argv[3];
+async function configSurprise() {
+  const zipSource = process.argv[3];
+  // Optional password for an encrypted zip file
+  const password = process.argv[4];
 
-  if (!zipPath) {
-    console.error("Error: Please provide a path to a zip file.");
-    console.log("Usage: steacc cs <path-to-zip-file>");
+  if (!zipSource) {
+    console.error("Error: Please provide a path or https URL to a zip file.");
+    console.log("Usage: steacc cs <path-or-url-to-zip-file> [password]");
     process.exit(1);
   }
 
-  if (!fs.existsSync(zipPath)) {
-    console.error(`Error: Zip file not found: ${zipPath}`);
-    process.exit(1);
+  const isUrl = /^https:\/\//i.test(zipSource);
+
+  // Build an AdmZip instance from either a downloaded buffer or a local file.
+  let zip;
+  if (isUrl) {
+    console.log(`Downloading ${zipSource}...`);
+    let buffer;
+    try {
+      const response = await fetch(zipSource);
+      if (!response.ok) {
+        console.error(`Error: Failed to download zip file (HTTP ${response.status} ${response.statusText}).`);
+        process.exit(1);
+      }
+      buffer = Buffer.from(await response.arrayBuffer());
+    } catch (err) {
+      console.error(`Error: Failed to download zip file: ${err.message}`);
+      process.exit(1);
+    }
+    zip = new AdmZip(buffer);
+  } else {
+    if (!fs.existsSync(zipSource)) {
+      console.error(`Error: Zip file not found: ${zipSource}`);
+      process.exit(1);
+    }
+    zip = new AdmZip(zipSource);
   }
 
   // Create .steacc directory in home folder if it doesn't exist
@@ -272,11 +296,10 @@ function configSurprise() {
     fs.mkdirSync(extractDir, { recursive: true });
   }
 
-  console.log(`Extracting ${zipPath} to ${extractDir}...`);
+  console.log(`Extracting ${zipSource} to ${extractDir}...`);
 
   // Use adm-zip to extract the zip file
   try {
-    const zip = new AdmZip(zipPath);
     // Extract each entry to the extractDir, flattening any top-level folder
     zip.getEntries().forEach((entry) => {
       // Remove the first folder from the entry name if present
@@ -291,7 +314,8 @@ function configSurprise() {
         fs.mkdirSync(targetPath, { recursive: true });
       } else {
         fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-        fs.writeFileSync(targetPath, entry.getData());
+        // Pass the password through for encrypted entries; it's ignored for unencrypted ones.
+        fs.writeFileSync(targetPath, entry.getData(password));
       }
     });
     console.log(`Successfully extracted surprise package to: ${extractDir}`);
