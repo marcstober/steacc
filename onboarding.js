@@ -113,7 +113,7 @@ async function main(name, cd) {
 
   await pause(); // so that user can see directory creation message before screen is cleared
 
-  await runLearnTerminal();
+  await runLearnTerminal(path.join(CAMPER_ROOT_DIR, name));
 
   // NOTE: Don't clear terminal after running so we can see the text "Rick ASCII"
 }
@@ -137,6 +137,13 @@ function createCamperDirectory(name) {
 
   const jsonData = JSON.stringify(data, null, 2);
   fs.writeFileSync(path.join(camperDir, "agreed.json"), jsonData);
+
+  const sampleProjectDir = path.join(camperDir, "sampleproject");
+  fs.mkdirSync(sampleProjectDir, { recursive: true });
+
+  const samplePython = `# python code goes here
+`;
+  fs.writeFileSync(path.join(sampleProjectDir, "sample.py"), samplePython);
 }
 
 async function displayPage2() {
@@ -173,7 +180,7 @@ async function askToAgree(prompt = "\nType YES to agree: ") {
   }
 }
 
-async function runLearnTerminal() {
+async function runLearnTerminal(camperDir) {
   console.clear();
 
   await typewriterLog(
@@ -192,6 +199,7 @@ async function runLearnTerminal() {
       ["-File", path.join(currentDir, "learn-terminal.ps1")],
       {
         stdio: "inherit",
+        env: { ...process.env, STEACC_CAMPER_DIR: camperDir },
       }
     );
     child.on("close", (code) => {

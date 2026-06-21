@@ -22,6 +22,21 @@ import AdmZip from "adm-zip";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+function spawnPowershellScript(scriptPath) {
+  return child_process.spawn(
+    "powershell",
+    ["-File", path.basename(scriptPath)],
+    {
+      stdio: "inherit",
+      cwd: path.dirname(scriptPath),
+      env: {
+        ...process.env,
+        CAMPER_ROOT_DIR,
+      },
+    }
+  );
+}
+
 // function log(msg) {
 //     console.log(`STEACC>> ${msg}`)
 // }
@@ -43,7 +58,12 @@ switch (process.argv[2]) {
     break;
   case "surprise":
     // Check for custom surprise first
-    const customSurprisePath = path.join(process.env.USERPROFILE || process.env.HOME, ".steacc", "surprise", "surprise.ps1");
+    const customSurprisePath = path.join(
+      process.env.USERPROFILE || process.env.HOME,
+      ".steacc",
+      "surprise",
+      "surprise.ps1"
+    );
     let surprisePath;
 
     if (fs.existsSync(customSurprisePath)) {
@@ -52,7 +72,7 @@ switch (process.argv[2]) {
       surprisePath = path.join(__dirname, "content", "surprise.ps1");
     }
 
-    const surprisePs = child_process.spawn("powershell", ["-File", surprisePath], { stdio: "inherit", cwd: path.dirname(surprisePath) });
+    const surprisePs = spawnPowershellScript(surprisePath);
 
     surprisePs.on("close", (code) => {
       console.log("I hope you enjoyed your surprise. :)");
@@ -78,7 +98,7 @@ switch (process.argv[2]) {
     });
     break;
   case "winget":
-    const ps = child_process.spawn("powershell", ["-File", "run-winget.ps1"], { stdio: "inherit", cwd: __dirname });
+    const ps = spawnPowershellScript(path.join(__dirname, "run-winget.ps1"));
 
     ps.on("close", (code) => {
       console.log(`child process exited with code ${code}`);
@@ -155,16 +175,24 @@ switch (process.argv[2]) {
     while (true) {
       if (isOnboarding) {
         console.log("\n\nNow you must choose a name for your first project.");
-        console.log("Remember the name you choose; you will use it to load your code.");
+        console.log(
+          "Remember the name you choose; you will use it to load your code."
+        );
       } else {
-        const subdirectories = fs.readdirSync(camperDir).filter((file) => fs.statSync(path.join(camperDir, file)).isDirectory());
+        const subdirectories = fs
+          .readdirSync(camperDir)
+          .filter((file) =>
+            fs.statSync(path.join(camperDir, file)).isDirectory()
+          );
         console.log("\nExisting projects:\n\n");
         // NOTE: NOT using backticks or other string in the line below
         // so that it's logged as in the more raw way that an array is logged
         // (e.g., [ "foo", "bar" ])
         // so learners get used to seeing that.
         console.log(subdirectories);
-        console.log("\n\nEnter a name from the list above, a new name to create a new project.");
+        console.log(
+          "\n\nEnter a name from the list above, a new name to create a new project."
+        );
       }
       projectName = await askQuestion("Project name: ");
       if (/\s/.test(projectName)) {
@@ -197,8 +225,14 @@ switch (process.argv[2]) {
             type: "module",
           })
         );
-        fs.copyFileSync(__dirname + "\\question-asker.js", path.join(projectDir, "question-asker.js"));
-        fs.copyFileSync(__dirname + "\\favicon.ico", path.join(projectDir, "favicon.ico"));
+        fs.copyFileSync(
+          __dirname + "\\question-asker.js",
+          path.join(projectDir, "question-asker.js")
+        );
+        fs.copyFileSync(
+          __dirname + "\\favicon.ico",
+          path.join(projectDir, "favicon.ico")
+        );
       }
     }
 
@@ -210,7 +244,11 @@ switch (process.argv[2]) {
     console.log(shell_command_color(cdCommand));
     // the wrapper script will look for this
     const tmpCdFile = path.join(process.env.TEMP, "steacc-exit-temp.ps1");
-    fs.writeFileSync(tmpCdFile, cdCommand);
+    const escapedCamperDir = camperDir.replaceAll("'", "''");
+    fs.writeFileSync(
+      tmpCdFile,
+      `$env:STEACC_CAMPER_DIR='${escapedCamperDir}'\n${cdCommand}`
+    );
     break;
   default:
     // Invalid command provided
@@ -220,26 +258,33 @@ switch (process.argv[2]) {
 }
 
 function update() {
-  child_process.exec("npm update -g @marcstober/steacc", (err, stdout, stderr) => {
-    if (err) {
-      console.error(err);
-      return;
+  child_process.exec(
+    "npm update -g @marcstober/steacc",
+    (err, stdout, stderr) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      console.log(stdout);
     }
-    console.log(stdout);
-  });
+  );
 }
 
 function learn(topic) {
   switch (topic) {
     case "terminal":
-      const ps = child_process.spawn("powershell", ["-File", "learn-terminal.ps1"], { stdio: "inherit", cwd: __dirname });
+      const ps = spawnPowershellScript(
+        path.join(__dirname, "learn-terminal.ps1")
+      );
 
       ps.on("close", (code) => {
         console.log(`learn-terminal.ps1 exited with code ${code}`);
       });
       break;
     default:
-      console.error("Error: Unknown learning topic. Available topics: terminal");
+      console.error(
+        "Error: Unknown learning topic. Available topics: terminal"
+      );
       break;
   }
 }
@@ -265,7 +310,9 @@ async function configSurprise() {
     try {
       const response = await fetch(zipSource);
       if (!response.ok) {
-        console.error(`Error: Failed to download zip file (HTTP ${response.status} ${response.statusText}).`);
+        console.error(
+          `Error: Failed to download zip file (HTTP ${response.status} ${response.statusText}).`
+        );
         process.exit(1);
       }
       buffer = Buffer.from(await response.arrayBuffer());
@@ -283,7 +330,10 @@ async function configSurprise() {
   }
 
   // Create .steacc directory in home folder if it doesn't exist
-  const steaccDir = path.join(process.env.USERPROFILE || process.env.HOME, ".steacc");
+  const steaccDir = path.join(
+    process.env.USERPROFILE || process.env.HOME,
+    ".steacc"
+  );
   if (!fs.existsSync(steaccDir)) {
     fs.mkdirSync(steaccDir, { recursive: true });
     console.log(`Created directory: ${steaccDir}`);
