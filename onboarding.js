@@ -12,8 +12,27 @@ const CAMPER_ROOT_DIR = "C:\\camper";
 
 let contentDir = "";
 
-async function run(name, cd) {
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function typewriterLog(message, options = {}) {
+  const { delay = 25, newlineDelay = 300, stream = process.stdout } = options;
+  const text = String(message);
+
+  for (const char of text) {
+    stream.write(char);
+    await sleep(delay);
+  }
+
+  stream.write("\n");
+  await sleep(newlineDelay);
+}
+
+async function main(name, cd) {
   contentDir = cd;
+
+  // page 0
 
   console.clear();
 
@@ -29,7 +48,19 @@ async function run(name, cd) {
     })
   );
 
+  await typewriterLog("\n");
+
+  // TODO: actual word-wrap to terminal width or a max instead of hard-coded line breaks (here and with .md files)
+  // TODO: use marked to render this text
+  await typewriterLog(
+    "\nBefore we get started, you need to agree to some rules. \n" +
+      "The rules for using technology are sometimes called an *Acceptable Use Policy*. \n" +
+      "Press Enter to view our Acceptable Use Policy."
+  );
+
   await pause();
+
+  // page 1
 
   console.clear();
 
@@ -59,22 +90,27 @@ async function run(name, cd) {
   );
 
   const parsedText = marked.parse(text);
-  console.log(parsedText);
+  await typewriterLog("\n" + parsedText);
 
-  await pause();
+  await askToAgree();
 
-  displayPage2();
+  // page 2 - "hardware rules"
 
-  await askForAgreementWithRulesAndExitIfNotAgreed("\nTo continue, type YES to indicate you will use the computers responsibly: ");
+  await displayPage2();
 
-  displayHardwareRules();
+  await askToAgree();
 
-  await askForAgreementWithRulesAndExitIfNotAgreed("\nTo continue, enter YES to agree to follow these rules: ");
+  // page 3
+
+  await displayPage3();
+
+  await askToAgree();
+
+  console.log("Thank you for agreeing to the rules.\n\n"); // not a typewriter
 
   // NOTE: Do this before runLearnTerminal since the lesson refers to this directory having been created.
   createCamperDirectory(name);
 
-  console.log("Thank you for agreeing to the rules. Now we will learn how to use the terminal.\n\n");
   await pause(); // so that user can see directory creation message before screen is cleared
 
   await runLearnTerminal();
@@ -85,13 +121,13 @@ async function run(name, cd) {
 async function pause() {
   // cf. pause command in batch files
   // TODO: any key
-  await askQuestion("\nPress ENTER to continue...");
+  await askQuestion("\n\nPress ENTER to continue...");
 }
 
 function createCamperDirectory(name) {
   const camperDir = path.join(CAMPER_ROOT_DIR, name);
 
-  console.log("\n\nCreating directory...");
+  console.log("\n\nCreating camper directory...");
   console.log(`mkdir ${camperDir}\\`);
   fs.mkdirSync(camperDir, { recursive: true });
 
@@ -103,36 +139,46 @@ function createCamperDirectory(name) {
   fs.writeFileSync(path.join(camperDir, "agreed.json"), jsonData);
 }
 
-function displayPage2() {
+async function displayPage2() {
   console.clear();
 
   const text = fs.readFileSync(path.join(contentDir, "aup_p2.md"), "utf8");
   const parsedText = marked.parse(text);
-  console.log(parsedText);
+  await typewriterLog("\n" + parsedText);
 }
 
-function displayHardwareRules() {
+async function displayPage3() {
   console.clear();
 
-  const text = fs.readFileSync(path.join(contentDir, "hardwarerules.md"), "utf8");
+  const text = fs.readFileSync(path.join(contentDir, "onboarding3.md"), "utf8");
   const parsedText = marked.parse(text);
-  console.log(parsedText);
+  await typewriterLog("\n" + parsedText);
 }
 
-async function askForAgreementWithRulesAndExitIfNotAgreed(prompt) {
+async function askToAgree(prompt = "\nType YES to agree: ") {
   const answer = await askQuestion(prompt);
   // This does not accept lowercase or just "Y" or "N" because we make how to handle that
   // a teachable moment later.
   const agree = answer === "YES";
   if (!agree) {
-    console.log("\nSorry, you must agree by typing YES to participate in the workshop.");
-    console.log(marked.parse("You can run the **st** program again if you change your mind.\n"));
+    console.log(
+      "\nSorry, you must agree by typing YES to participate in the workshop."
+    );
+    console.log(
+      marked.parse(
+        "You can run the **st** program again if you change your mind.\n"
+      )
+    );
     process.exit(1);
   }
 }
 
 async function runLearnTerminal() {
   console.clear();
+
+  await typewriterLog(
+    "Now you will learn how to use the terminal and file system.\n\n"
+  );
 
   const { spawn } = await import("child_process");
   await new Promise((resolve, reject) => {
@@ -141,9 +187,13 @@ async function runLearnTerminal() {
     const currentDir = path.dirname(fileURLToPath(import.meta.url));
     console.log(`Running learn-terminal.ps1 in ${currentDir}`);
 
-    const child = spawn("powershell.exe", ["-File", path.join(currentDir, "learn-terminal.ps1")], {
-      stdio: "inherit",
-    });
+    const child = spawn(
+      "powershell.exe",
+      ["-File", path.join(currentDir, "learn-terminal.ps1")],
+      {
+        stdio: "inherit",
+      }
+    );
     child.on("close", (code) => {
       process.stdout.write("\x1b[0m"); // Reset terminal colors
       if (code === 0) resolve();
@@ -153,5 +203,5 @@ async function runLearnTerminal() {
   });
 }
 
-export default { run };
-export { CAMPER_ROOT_DIR };
+export default { main };
+export { CAMPER_ROOT_DIR, typewriterLog };

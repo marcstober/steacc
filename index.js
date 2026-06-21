@@ -149,7 +149,7 @@ switch (process.argv[2]) {
       isOnboarding = true;
       const contentDir = path.join(__dirname, "content");
 
-      await onboarding.run(name, contentDir);
+      await onboarding.main(name, contentDir);
     }
 
     while (true) {

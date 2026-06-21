@@ -1,15 +1,9 @@
-## Acceptable Use Policy, continued
+### Rules
 
+You must also agree to these rules:
 
-As engineers, you have full (Administrator) access to the computer 
-and access to the Internet. Use this responsibly.
-
-Just because you **can** do something with a computer doesn’t mean it’s *right*. Be ethical.
-
-**With great power comes great responsibility.** 
-
-Responsibility (*achrayut*) is also a Jewish value.
-    
-**Majorly inappropriate use of Internet will be reported to directors!**
-
-
+- Only use the computers when allowed by the instructor or a counselor.
+- Do not take computers out of the building.
+- Leave it plugged in when you leave.
+- Have _kavod_ for the machine and especially for other campers who will use it (in lower/upper camp or next session).
+- Only Cantor Marc uses Cantor Marc’s computer. (Why?)
