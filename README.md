@@ -64,6 +64,10 @@ This means users can:
 
 ## Change Log
 
+### 2026.1.1 and 2026.1.2
+
+- Update onboarding, terminal and file system traning for 2026.
+
 ### 2026.1.0
 
 - Store camper projects in `camper` folder.
