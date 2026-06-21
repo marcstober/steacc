@@ -66,7 +66,7 @@ This means users can:
 
 ### 2026.1.1 and 2026.1.2
 
-- Update onboarding, terminal and file system traning for 2026.
+- Update onboarding, terminal and file system training for 2026.
 
 ### 2026.1.0
 
