@@ -22,7 +22,7 @@ import AdmZip from "adm-zip";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-function spawnPowershellScript(scriptPath) {
+function spawnPowershellScript(scriptPath, camperDir = "") {
   return child_process.spawn(
     "powershell",
     ["-File", path.basename(scriptPath)],
@@ -32,6 +32,7 @@ function spawnPowershellScript(scriptPath) {
       env: {
         ...process.env,
         CAMPER_ROOT_DIR,
+        STEACC_CAMPER_DIR: camperDir,
       },
     }
   );
@@ -41,10 +42,9 @@ function spawnPowershellScript(scriptPath) {
 //     console.log(`STEACC>> ${msg}`)
 // }
 
-// log(process.argv[2]) // debugging
 switch (process.argv[2]) {
   case "learn":
-    learn(process.argv[3]);
+    await learn(process.argv[3]);
     break;
   case "update":
   case "up":
@@ -128,31 +128,15 @@ switch (process.argv[2]) {
     // No arguments provided - run the default interactive mode
     let name, projectName;
 
-    console.log("\x1b[2J\x1b[0f");
+    let isOnboarding;
+    let camperDir;
+    ({ isOnboarding, camperDir, name } = await promptForCoderName(name));
 
-    // TODO: force it not to wrap in the console
-    const splashPath = path.join(__dirname, "content", "splash.txt");
-    const splash = fs.readFileSync(splashPath, "utf-16le");
-    console.log(splash);
+    if (isOnboarding) {
+      const contentDir = path.join(__dirname, "content");
 
-    while (true) {
-      name = await askQuestion("Coder name: ");
-
-      if (name === "") {
-        continue;
-      }
-
-      if (/\s/.test(name)) {
-        console.log("No spaces allowed");
-        continue;
-      }
-      break;
-    }
-
-    // see if directory exists
-    const camperDir = path.join(CAMPER_ROOT_DIR, name);
-    let isOnboarding = false;
-    if (fs.existsSync(camperDir)) {
+      await onboarding.main(name, contentDir);
+    } else {
       console.clear();
       console.log(
         figlet.textSync(`Welcome back,`, {
@@ -165,11 +149,6 @@ switch (process.argv[2]) {
           width: process.stdout.columns,
         })
       );
-    } else {
-      isOnboarding = true;
-      const contentDir = path.join(__dirname, "content");
-
-      await onboarding.main(name, contentDir);
     }
 
     while (true) {
@@ -257,6 +236,38 @@ switch (process.argv[2]) {
     process.exit(1);
 }
 
+async function promptForCoderName(name) {
+  // clear the screen and move cursor to top-left corner
+  console.log("\x1b[2J\x1b[0f");
+
+  // TODO: force it not to wrap in the console (use aaart? it does this)
+  const splashPath = path.join(__dirname, "content", "splash.txt");
+  const splash = fs.readFileSync(splashPath, "utf-16le");
+  console.log(splash);
+
+  while (true) {
+    name = await askQuestion("Coder name: ");
+
+    if (name === "") {
+      continue;
+    }
+
+    if (/\s/.test(name)) {
+      console.log("No spaces allowed");
+      continue;
+    }
+    break;
+  }
+
+  // see if directory exists
+  const camperDir = path.join(CAMPER_ROOT_DIR, name);
+  let isOnboarding = true;
+  if (fs.existsSync(camperDir)) {
+    isOnboarding = false;
+  }
+  return { isOnboarding, camperDir, name };
+}
+
 function update() {
   child_process.exec(
     "npm update -g @marcstober/steacc",
@@ -270,11 +281,15 @@ function update() {
   );
 }
 
-function learn(topic) {
+async function learn(topic) {
+  let isOnboarding, camperDir, name;
+  ({ isOnboarding, camperDir, name } = await promptForCoderName(name));
+
   switch (topic) {
     case "terminal":
       const ps = spawnPowershellScript(
-        path.join(__dirname, "learn-terminal.ps1")
+        path.join(__dirname, "learn-terminal.ps1"),
+        camperDir
       );
 
       ps.on("close", (code) => {
