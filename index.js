@@ -221,6 +221,11 @@ switch (process.argv[2]) {
       cdCommand += `${projectName}\\`;
     }
     console.log(shell_command_color(cdCommand));
+    console.log(
+      "Run " +
+        shell_command_color("code .") +
+        " (don't forget the space and the dot!) to open your project in VS Code."
+    );
     // the wrapper script will look for this
     const tmpCdFile = path.join(process.env.TEMP, "steacc-exit-temp.ps1");
     const escapedCamperDir = camperDir.replaceAll("'", "''");
