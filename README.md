@@ -64,6 +64,18 @@ This means users can:
 
 ## Change Log
 
+### 2026.1.4
+
+- Add a message to tell the user to use `code .` to open their project after it's been "loaded."
+
+### 2026.1.3
+
+- Prompt for coder name (like usual) if not set when `learn` command is run
+  so it can be used in the tutorial. This only works if the coder name given has already been
+  set up in onboarding (i.e., there is already a camper directory with that name).
+- Update Google dependencies to fix an error that seemed to be cause by using an old version with
+  a newer version of Node.
+
 ### 2026.1.1 and 2026.1.2
 
 - Update onboarding, terminal and file system training for 2026.
