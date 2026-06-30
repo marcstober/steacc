@@ -1,0 +1,13 @@
+{
+  "defaultTemplate": "default",
+  "templates": {
+    "default": {
+      "manifest": "python.json",
+      "description": "Python starter project"
+    },
+    "javascript": {
+      "manifest": "javascript.json",
+      "description": "Original JavaScript starter bundle"
+    }
+  }
+}

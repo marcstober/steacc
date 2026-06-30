@@ -62,10 +62,20 @@ This means users can:
 - The zip should contain a `surprise.ps1` file that will be extracted to `~/.steacc/surprise/`.
 - From then on, `steacc surprise` will run their custom surprise instead of the built-in one.
 
+## New Project Templates
+
+New projects are created from a template registry.
+The default starter is a Python bundle.
+
+To use the older JavaScript starter bundle, set `STEACC_PROJECT_TEMPLATE="javascript"`.
+
 ## Change Log
 
 ### 2026.1.4
 
+- Default to installing starter files for a Pygame project.
+  The old JS starter project is still an option and there is a
+  new template installer system (thanks, AI).
 - Add a message to tell the user to use `code .` to open their project after it's been "loaded."
 
 ### 2026.1.3

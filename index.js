@@ -12,6 +12,10 @@ import upload from "./drive.cjs";
 import { version } from "./version.js";
 
 import onboarding, { CAMPER_ROOT_DIR } from "./onboarding.js";
+import {
+  getDefaultProjectTemplateName,
+  installProjectTemplate,
+} from "./template-installer.js";
 
 import figlet from "figlet";
 
@@ -37,10 +41,6 @@ function spawnPowershellScript(scriptPath, camperDir = "") {
     }
   );
 }
-
-// function log(msg) {
-//     console.log(`STEACC>> ${msg}`)
-// }
 
 switch (process.argv[2]) {
   case "learn":
@@ -197,21 +197,9 @@ switch (process.argv[2]) {
         console.log("Creating project...");
         console.log(shell_command_color(`mkdir ${projectDir}\\`));
         fs.mkdirSync(projectDir);
-        // TODO: create a more complete package.json?
-        fs.writeFileSync(
-          path.join(projectDir, "package.json"),
-          JSON.stringify({
-            type: "module",
-          })
-        );
-        fs.copyFileSync(
-          __dirname + "\\question-asker.js",
-          path.join(projectDir, "question-asker.js")
-        );
-        fs.copyFileSync(
-          __dirname + "\\favicon.ico",
-          path.join(projectDir, "favicon.ico")
-        );
+        installProjectTemplate(getDefaultProjectTemplateName(), projectDir, {
+          projectName,
+        });
       }
     }
 

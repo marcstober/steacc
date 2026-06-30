@@ -1,0 +1,36 @@
+{
+  "name": "python",
+  "description": "Python starter project",
+  "actions": [
+    {
+      "type": "copy",
+      "source": "./python/sprite/circlesprite.py",
+      "target": "./sprite/circlesprite.py"
+    },
+    {
+      "type": "copy",
+      "source": "./python/sprite/imagesprite.py",
+      "target": "./sprite/imagesprite.py"
+    },
+    {
+      "type": "copy",
+      "source": "./python/sprite/README.md",
+      "target": "./sprite/README.md"
+    },
+    {
+      "type": "copy",
+      "source": "./python/sprite/rectsprite.py",
+      "target": "./sprite/rectsprite.py"
+    },
+    {
+      "type": "copy",
+      "source": "./python/rocket.png",
+      "target": "./rocket.png"
+    },
+    {
+      "type": "copy",
+      "source": "./python/starter.py",
+      "target": "./starter.py"
+    }
+  ]
+}

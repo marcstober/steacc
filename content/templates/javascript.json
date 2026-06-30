@@ -1,0 +1,21 @@
+{
+  "name": "javascript",
+  "description": "Original JavaScript starter bundle",
+  "actions": [
+    {
+      "type": "write",
+      "target": "package.json",
+      "content": "{\n  \"type\": \"module\"\n}\n"
+    },
+    {
+      "type": "copy",
+      "source": "../../question-asker.js",
+      "target": "question-asker.js"
+    },
+    {
+      "type": "copy",
+      "source": "./javascript/favicon.ico",
+      "target": "favicon.ico"
+    }
+  ]
+}
