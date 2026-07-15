@@ -6,4 +6,4 @@ You must also agree to these rules:
 - Do not take computers out of the building.
 - Leave it plugged in when you leave.
 - Have _kavod_ for the machine and especially for other campers who will use it (in lower/upper camp or next session).
-- Only Cantor Marc uses Cantor Marc’s computer. (Why?)
+- Do not touch anyone else's computer (campers or staff) without their consent. (Why?)

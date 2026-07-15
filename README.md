@@ -71,6 +71,11 @@ To use the older JavaScript starter bundle, set `STEACC_PROJECT_TEMPLATE="javasc
 
 ## Change Log
 
+### 2026.1.5
+
+- Add "typewriter" feature to "learn terminal" module.
+- Update policy to not touch **anyone's** computer.
+
 ### 2026.1.4
 
 - Default to installing starter files for a Pygame project.
